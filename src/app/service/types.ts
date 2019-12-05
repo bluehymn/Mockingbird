@@ -18,16 +18,12 @@ export interface IHttpResponseError<Code = HttpErrorStatusCode> {
 }
 
 // Collection
-export interface CollectionRawData {
+export interface CollectionData {
   id: string;
   name: string;
   port: number;
   prefix: string;
   proxyUrl: string;
-}
-
-export interface CollectionLocalData {
-  id?: string;
   headers: { key: string; value: string }[];
   routes: Route[];
   running: boolean;
@@ -36,9 +32,9 @@ export interface CollectionLocalData {
   template: string;
 }
 
-export type Collection = CollectionRawData & CollectionLocalData;
+export type Collection = CollectionData;
 
-export type CreateCollectionData = Pick<Collection, 'name' | 'port'> &
+export type CreateCollectionData = Pick<Collection, 'id' | 'name' | 'port'> &
   Partial<Pick<Collection, 'prefix' | 'headers' | 'proxyUrl'>>;
 
 // Route

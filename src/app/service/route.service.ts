@@ -88,7 +88,7 @@ export class RouteService {
   updateRouteLocalData(data: Partial<Route>) {
     const newData = _.pick(data, ['id', 'ignore', 'activatedResponseId']);
     this.updateRouteListData$.next(data);
-    this.dbService.get('route', data.id).then(route => {
+    this.dbService.get('route', data.id).subscribe(route => {
       if (route) {
         this.dbService.update('route', data.id, newData);
       } else {
@@ -99,7 +99,7 @@ export class RouteService {
 
   getActivatedResponse(routeId: string): Promise<ResponseRawData> {
     return new Promise((resolve, reject) => {
-      this.dbService.get<RouteLocalData>('route', routeId).then(route => {
+      this.dbService.get<RouteLocalData>('route', routeId).subscribe(route => {
         if (route) {
           this.responseService.getResponse(route.activatedResponseId).subscribe(ret => {
             if (ret.statusCode === HTTP_STATUS_CODE.OK) {

@@ -36,7 +36,7 @@ export class CollectionSettingsComponent implements OnInit {
   getCollectionLocalData() {
     this.collectionService
       .getCollectionLocalData(this.collectionId)
-      .then(data => {
+      .subscribe(data => {
         if (data) {
           this.enableCors = data.cors;
           if (data.headers && data.headers.length) {

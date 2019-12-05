@@ -5,24 +5,23 @@ import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
   Collection,
-  CollectionLocalData,
+  CollectionData,
   CreateCollectionData,
   IHttpResponse,
-  CollectionRawData,
   IHttpResponseError
 } from './types';
 import { HTTP_STATUS_CODE, REQUEST_CODE_TEMPLATE } from '../constants/application';
 import { StoreService } from './store.service';
 import { IndexedDBService } from './indexedDB.service';
 
-const COLLECTION_DEFAULT_DATA: CollectionLocalData = {
-  routes: [],
-  headers: [],
-  running: false,
-  cors: true,
-  delay: 0,
-  template: REQUEST_CODE_TEMPLATE
-};
+// const COLLECTION_DEFAULT_DATA: CollectionData = {
+//   routes: [],
+//   headers: [],
+//   running: false,
+//   cors: true,
+//   delay: 0,
+//   template: REQUEST_CODE_TEMPLATE
+// };
 
 @Injectable({
   providedIn: 'root'
@@ -37,26 +36,17 @@ export class CollectionService {
   ) {}
 
   createCollection(data: CreateCollectionData) {
-    return this.httpClient.post<
-      IHttpResponse<any, HTTP_STATUS_CODE.CREATED> | IHttpResponseError
-    >('@host/collection', data);
+    return this.dbService.add('collection', data);
   }
 
   getCollections(): Observable<Collection[]> {
     return this.httpClient
-      .get<IHttpResponse<CollectionRawData[]>>('@host/collection')
+      .get<IHttpResponse<CollectionData[]>>('@host/collection')
       .pipe(
         map(res => {
           if (res.statusCode === HTTP_STATUS_CODE.OK) {
             const data = res.data;
-            this.collections = data.map(item => {
-              const collection = Object.assign(
-                {},
-                COLLECTION_DEFAULT_DATA,
-                item
-              );
-              return collection;
-            });
+            this.collections = data;
             return this.collections;
           } else {
             return [];
@@ -69,7 +59,7 @@ export class CollectionService {
     return this.collections.find(collection => collection.id === collectionId);
   }
 
-  updateCollection(collectionId, data: Partial<CollectionRawData>) {
+  updateCollection(collectionId, data: Partial<CollectionData>) {
     return this.httpClient.patch<IHttpResponse>(
       `@host/collection/${collectionId}`,
       data
@@ -98,7 +88,7 @@ export class CollectionService {
     this.dbService.opened$.subscribe(opened => {
       if (opened) {
         collections.forEach(collection => {
-          this.dbService.get('collection', collection.id).then((existed) => {
+          this.dbService.get('collection', collection.id).subscribe((existed) => {
             if (!existed) {
               this.dbService.add('collection', _.pick(collection, ['id', 'delay', 'cors', 'headers', 'template']));
             }
@@ -109,6 +99,6 @@ export class CollectionService {
   }
 
   getCollectionLocalData(collectionId) {
-    return this.dbService.get<CollectionLocalData>('collection', collectionId);
+    return this.dbService.get<CollectionData>('collection', collectionId);
   }
 }

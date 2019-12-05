@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -40,39 +40,45 @@ export class IndexedDBService {
     };
   }
 
-  add(storeName: string, data: any) {
-    return new Promise((resolve, reject) => {
+  add<T = any>(storeName: string, data: T): Observable<any> {
+    const observable = new Observable(subscriber => {
       const request = this.db
         .transaction([storeName], 'readwrite')
         .objectStore(storeName)
         .add(data);
       request.onsuccess = function(event) {
-        resolve();
+        subscriber.next(request.result);
+        subscriber.complete();
       };
       request.onerror = function(event) {
-        reject(new Error('add failed'));
+        throwError(event);
+        subscriber.complete();
       };
     });
+    return observable;
   }
 
-  get<T = any>(storeName: string, key: IDBValidKey | IDBKeyRange): Promise<T> {
-    return new Promise((resolve, reject) => {
+  get<T = any>(storeName: string, key: IDBValidKey | IDBKeyRange): Observable<T> {
+    const observable = new Observable<T>(subscriber => {
       const request = this.db
-        .transaction([storeName], 'readwrite')
+        .transaction([storeName], 'readonly')
         .objectStore(storeName)
         .get(key);
       request.onsuccess = function(event) {
-        resolve(request.result);
+        subscriber.next(request.result);
+        subscriber.complete();
       };
       request.onerror = function(event) {
-        reject(new Error('failed'));
+        throwError(event);
+        subscriber.complete();
       };
     });
+    return observable;
   }
 
   update(storeName: string, key: IDBValidKey | IDBKeyRange, data: any) {
     return new Promise((resolve, reject) => {
-      this.get(storeName, key).then(oldData => {
+      this.get(storeName, key).subscribe(oldData => {
         const newData = Object.assign(oldData, data);
         this.put(storeName, newData)
           .then(() => {
@@ -114,5 +120,4 @@ export class IndexedDBService {
       };
     });
   }
-
 }

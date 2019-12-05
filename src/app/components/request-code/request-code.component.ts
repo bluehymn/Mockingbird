@@ -81,7 +81,7 @@ export class RequestCodeComponent implements OnInit, OnDestroy {
       if (created) {
         this.collectionService
           .getCollectionLocalData(route.collectionId)
-          .then(collectionData => {
+          .subscribe(collectionData => {
             let template = collectionData.template;
             template = template.replace('{{METHOD}}', route.method);
             template = template.replace('{{PATH}}', route.path);
