@@ -1,0 +1,45 @@
+@import '../../scss/color';
+
+.wrapper {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background-color: $blue-6;
+  color: #ffffff;
+  padding: 0 12px;
+}
+
+.update-notice {
+  padding-left: 18px;
+  color: #ffffff;
+  i {
+    display: inline-block;
+    color: #ffffff;
+    animation: rotate linear 500ms infinite;
+  }
+  .text {
+    padding-left: 6px;
+    animation: twinkle linear 1500ms infinite;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

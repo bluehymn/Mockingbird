@@ -1,0 +1,54 @@
+@import '../../scss/color';
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 12px;
+  border-bottom: 1px solid $gray-2;
+  h2 {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.routes-wrapper {
+  background-color: $gray-1;
+  width: 240px;
+}
+
+.routes {
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px 6px 9px;
+    border-bottom: 1px solid $gray-2;
+    border-left: solid 3px transparent;
+    transition: 0.2s ease-in all;
+    cursor: pointer;
+  }
+  li.active {
+    background-color: rgba($color: $blue-6, $alpha: 0.05);
+    border-left-color: $blue-6;
+  }
+  .name {
+    color: $gray-9;
+  }
+  .path {
+    font-size: 12px;
+    nz-tag{
+      display: inline-block;
+      padding: 0 5px;
+      line-height: 16px;
+      border-radius: 3px;
+    }
+  }
+  .remove {
+    color: $gray-4;
+    transition: 0.2s ease-in all;
+    &:hover {
+      color: $red-5;
+    }
+  }
+}

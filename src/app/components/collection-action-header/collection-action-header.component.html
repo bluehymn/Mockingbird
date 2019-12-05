@@ -1,0 +1,69 @@
+<div class="header-container">
+  <div class="left-container">
+    <button
+      class="switcher play"
+      (click)="start()"
+      [hidden]="collectionIsRunning || needRestart"
+      nz-tooltip
+      nzTooltipTitle="Start mock server"
+    >
+      <i nz-icon nzType="icons:play" nzTheme="fill"></i>
+    </button>
+    <button
+      class="switcher stop"
+      (click)="stop()"
+      [hidden]="!collectionIsRunning || needRestart"
+      nz-tooltip
+      nzTooltipTitle="Stop"
+    >
+      <i nz-icon nzType="icons:stop" nzTheme="fill"></i>
+    </button>
+
+    <button
+      class="switcher restart"
+      (click)="restart()"
+      [hidden]="!needRestart"
+      nz-tooltip
+      nzTooltipTitle="restart"
+    >
+      <i nz-icon nzType="icons:refresh" nzTheme="fill"></i>
+    </button>
+
+    <div class="name">
+      <input
+        type="text"
+        nz-input
+        [(ngModel)]="name"
+        (ngModelChange)="collectionChange('name', $event)"
+      />
+    </div>
+    <nz-input-group class="port" nzAddOnBefore="http://localhost:">
+      <input
+        type="text"
+        nz-input
+        [(ngModel)]="port"
+        nz-tooltip
+        nzTooltipTitle="Port"
+        (ngModelChange)="collectionChange('port', $event)"
+      />
+    </nz-input-group>
+    <div class="slash">/</div>
+    <nz-input-group class="prefix">
+      <input
+        type="text"
+        nz-input
+        [(ngModel)]="prefix"
+        nz-tooltip
+        nzTooltipTitle="Route prefix"
+        (ngModelChange)="collectionChange('prefix', $event)"
+      />
+    </nz-input-group>
+  </div>
+  <i
+    nz-icon
+    nzType="setting"
+    nzTheme="outline"
+    class="setting"
+    (click)="openSettingModal()"
+  ></i>
+</div>

@@ -1,0 +1,42 @@
+<div class="routes-wrapper">
+  <div class="header">
+    <h2>Routes</h2>
+    <button
+      nz-button
+      nzType="primary"
+      nzSize="small"
+      (click)="openCreateModal($event)"
+    >
+      <i nz-icon nzType="plus" nzTheme="outline"></i>New
+    </button>
+  </div>
+  <ul class="routes">
+    <li
+      *ngFor="let item of list"
+      (click)="selectRoute(item.id)"
+      [ngClass]="{ active: item.id === activeRouteId }"
+    >
+      <div>
+        <div class="name">{{ item.name }}</div>
+        <div class="path">
+          <nz-tag [nzColor]="httpMethodTagColors[item.method]">{{
+            item.method | uppercase
+          }}</nz-tag
+          ><span nz-tooltip nzTooltipTitle="{{ item.path }}"
+            >/{{ item.path | slice: 0:22 }}</span
+          >
+        </div>
+      </div>
+
+      <div>
+        <i
+          nz-icon
+          class="remove"
+          nzType="delete"
+          nzTheme="fill"
+          (click)="removeRoute(item.id, item.name)"
+        ></i>
+      </div>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,42 @@
+@import '../../scss/color';
+
+.response-actions {
+  display: flex;
+  padding-bottom: 12px;
+  padding-top: 12px;
+  align-items: center;
+  .title {
+    font-weight: bold;
+    color: $gray-9;
+    padding-right: 12px;
+  }
+  nz-input-group {
+    width: auto !important;
+  }
+}
+
+.row {
+  padding-bottom: 12px;
+}
+
+.method-path-group {
+  display: flex;
+}
+
+.response-selector {
+  margin-right: 12px;
+  width: 200px;
+}
+
+.code-name-group {
+  display: flex;
+}
+
+nz-tabset {
+  width: calc(100vw - 505px);
+  ::ng-deep {
+    .ant-tabs-bar {
+      margin: 0;
+    }
+  }
+}

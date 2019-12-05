@@ -1,0 +1,93 @@
+@import '../../scss/color';
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: solid 1px $gray-3;
+  border-top: solid 1px $gray-3;
+  background-color: $gray-1;
+}
+
+.left-container {
+  display: flex;
+  align-items: center;
+}
+
+.switcher {
+  border: none;
+  background: none;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.play {
+  color: $blue-6;
+  &:hover {
+    background-color: $gray-4;
+  }
+}
+
+.stop {
+  color: $red-6;
+  &:hover {
+    background-color: $gray-4;
+  }
+}
+
+.restart {
+  color: $red-6;
+  i {
+    display: inline-block;
+    animation: beat 1000ms linear infinite;
+    transform: scale(1);
+  }
+  &:hover {
+    background-color: $gray-4;
+  }
+}
+
+@keyframes beat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.75);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.name {
+  width: 120px;
+  margin-left: 12px;
+}
+
+.port {
+  width: 200px;
+  margin-left: 24px;
+}
+
+.prefix {
+  width: 200px;
+}
+
+.slash {
+  padding: 0 10px;
+}
+
+.setting {
+  cursor: pointer;
+}

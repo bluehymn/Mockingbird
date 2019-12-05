@@ -1,0 +1,47 @@
+<div class="section-title">
+  Cross-Origin Resource Sharing
+</div>
+<div class="row">
+  <span class="title">Enable CORS: </span
+  ><nz-switch [(ngModel)]="enableCors" (ngModelChange)="corsChange($event)"></nz-switch>
+</div>
+
+<div class="section-title">
+  Headers
+</div>
+
+<div class="header-group" *ngFor="let item of headers; index as i">
+  <input
+    placeholder="input key"
+    nz-input
+    [(ngModel)]="item.key"
+    (input)="showSuggestions('key', $event.target?.value)"
+    (blur)="suggestionOptions = []"
+    [nzAutocomplete]="auto"
+  />
+  <span class="colon">:</span>
+  <input
+    placeholder="input value"
+    nz-input
+    [(ngModel)]="item.value"
+    (input)="showSuggestions('value', $event.target?.value)"
+    (blur)="suggestionOptions = []"
+    [nzAutocomplete]="auto"
+  />
+  <i
+    nz-icon
+    class="remove"
+    nzType="delete"
+    nzTheme="fill"
+    (click)="removeHeader(item.uuid)"
+  ></i>
+  <nz-autocomplete nzBackfill #auto>
+    <nz-auto-option *ngFor="let option of suggestionOptions" [nzValue]="option">
+      {{ option }}
+    </nz-auto-option>
+  </nz-autocomplete>
+</div>
+
+<button nz-button nzType="primary" (click)="addHeader($event)">
+  Add Header
+</button>

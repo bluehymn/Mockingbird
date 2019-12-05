@@ -1,0 +1,18 @@
+<form [formGroup]="formGroup">
+  <div class="form-item">
+    <input nz-input placeholder="Response Name" formControlName="name" />
+  </div>
+
+  <div class="form-item">
+    <nz-select
+      nzPlaceHolder="Choose Status Code"
+      formControlName="statusCode"
+    >
+      <nz-option
+        *ngFor="let item of statusCodes"
+        [nzValue]="item.code"
+        [nzLabel]="item.code + ' ' + item.text"
+      ></nz-option>
+    </nz-select>
+  </div>
+</form>

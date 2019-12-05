@@ -1,0 +1,33 @@
+<form [formGroup]="formGroup">
+  <div class="form-item">
+    <input nz-input placeholder="Collection Name" formControlName="name" />
+  </div>
+  <nz-alert
+    nzType="error"
+    nzMessage="Invalid name or empty"
+    nzShowIcon
+    *ngIf="formGroup.get('name').invalid && formGroup.get('name').dirty"
+  ></nz-alert>
+  <div class="form-item">
+    <input nz-input placeholder="path" formControlName="path" />
+  </div>
+  <!-- <nz-alert
+    nzType="error"
+    nzMessage="Invalid port or empty"
+    nzShowIcon
+    *ngIf="formGroup.get('path').invalid && formGroup.get('path').dirty"
+  ></nz-alert> -->
+  <div class="form-item">
+    <nz-select name="method" nzPlaceHolder="Http method" formControlName="method">
+      <nz-option
+        *ngFor="let item of httpMethods"
+        [nzLabel]="item.name"
+        [nzValue]="item.value"
+      >
+      </nz-option>
+    </nz-select>
+  </div>
+  <div class="form-item">
+    <input nz-input placeholder="description" formControlName="description" />
+  </div>
+</form>

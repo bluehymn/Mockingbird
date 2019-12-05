@@ -1,0 +1,116 @@
+<div class="wrapper" *ngIf="!isEmpty">
+  <div class="row">
+    <nz-input-group nzCompact class="method-path-group">
+      <nz-select [ngModel]="method" (ngModelChange)="methodChange($event)">
+        <nz-option
+          *ngFor="let method of httpMethods"
+          [nzLabel]="method.name"
+          [nzValue]="method.value"
+        ></nz-option>
+      </nz-select>
+      <input
+        type="text"
+        nz-input
+        [ngModel]="path"
+        (ngModelChange)="pathChange($event)"
+      />
+    </nz-input-group>
+  </div>
+
+  <div class="row">
+    <input
+      nz-input
+      placeholder="input name"
+      [(ngModel)]="name"
+      (ngModelChange)="nameChange($event)"
+    />
+  </div>
+
+  <div class="row">
+    <textarea
+      rows="2"
+      nz-input
+      [(ngModel)]="description"
+      (ngModelChange)="descriptionChange($event)"
+      placeholder="input description"
+      [nzAutosize]="{ minRows: 2, maxRows: 2 }"
+    ></textarea>
+  </div>
+
+  <div class="response-actions">
+    <div class="title">Responses:</div>
+    <nz-select
+      class="response-selector"
+      [(ngModel)]="activatedResponseId"
+      nzPlaceHolder="Choose"
+      (ngModelChange)="setActivatedResponse($event)"
+      *ngIf="activatedResponse"
+    >
+      <nz-option
+        *ngFor="let response of responses"
+        [nzValue]="response.id"
+        [nzLabel]="response.name || 'unnamed'"
+      ></nz-option>
+    </nz-select>
+
+    <button
+      class="add-response-btn"
+      nz-button
+      nzType="primary"
+      nzSize="default"
+      (click)="openCreateResponseModal($event)"
+    >
+      <i nz-icon nzType="plus" nzTheme="outline"></i>Add Response
+    </button>
+  </div>
+
+  <div *ngIf="activatedResponse">
+    <nz-input-group nzCompact class="code-name-group">
+      <nz-select
+        [(ngModel)]="activatedResponse.statusCode"
+        (ngModelChange)="responseChange('statusCode', $event)"
+      >
+        <nz-option
+          *ngFor="let item of statusCodes"
+          [nzValue]="item.code"
+          [nzLabel]="item.code + ' ' + item.text"
+        ></nz-option>
+      </nz-select>
+      <input
+        type="text"
+        nz-input
+        [(ngModel)]="activatedResponse.name"
+        (ngModelChange)="responseChange('name', $event)"
+      />
+    </nz-input-group>
+
+    <nz-tabset>
+      <nz-tab nzTitle="Body">
+        <app-response-body
+          [responseBody]="responseBody"
+          (responseBodyChange)="responseChange('body', $event)"
+        ></app-response-body>
+      </nz-tab>
+      <!-- TODO：设置headers -->
+      <!-- <nz-tab nzTitle="Headers">
+          Content of Tab Pane 2
+        </nz-tab> -->
+      <nz-tab nzTitle="Types" [nzForceRender]="true">
+        <app-response-types [responseBody]="responseBody"></app-response-types>
+      </nz-tab>
+      <nz-tab nzTitle="Request Code" [nzForceRender]="true">
+        <app-request-code [routeData]="route"></app-request-code>
+      </nz-tab>
+    </nz-tabset>
+  </div>
+
+  <nz-empty
+    *ngIf="!activatedResponse"
+    nzNotFoundContent="No Responses"
+  ></nz-empty>
+</div>
+
+<nz-empty
+*ngIf="isEmpty"
+nzNotFoundContent="No Routes"
+></nz-empty>
