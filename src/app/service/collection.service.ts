@@ -52,10 +52,7 @@ export class CollectionService {
   }
 
   updateCollection(collectionId, data: Partial<CollectionData>) {
-    return this.httpClient.patch<IHttpResponse>(
-      `@host/collection/${collectionId}`,
-      data
-    );
+    return this.dbService.update('collection', collectionId, data);
   }
 
   updateCollectionLocally(collectionId, newValues: Partial<Collection>) {

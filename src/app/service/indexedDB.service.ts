@@ -143,18 +143,20 @@ export class IndexedDBService {
   }
 
   update(storeName: string, key: IDBValidKey | IDBKeyRange, data: any) {
-    return new Promise((resolve, reject) => {
+    const observable = new Observable(subscriber => {
       this.get(storeName, key).subscribe(oldData => {
         const newData = Object.assign(oldData, data);
         this.put(storeName, newData)
           .then(() => {
-            resolve();
+            subscriber.next(true);
           })
           .catch(() => {
-            reject(new Error('update failed'));
+            throwError(event);
+            subscriber.complete();
           });
       });
     });
+    return observable;
   }
 
   put(storeName: string, data: any) {
