@@ -6,7 +6,7 @@ import {
   OnDestroy
 } from '@angular/core';
 import { RouteService } from 'src/app/service/route.service';
-import { Route, Response, RouteRawData } from 'src/app/service/types';
+import { Route, Response, RouteData } from 'src/app/service/types';
 import { HTTP_METHODS, HTTP_STATUS_CODES } from 'src/app/constants/http';
 import { HttpMethod } from 'src/app/types/http.types';
 import { ResponseService } from 'src/app/service/response.service';
@@ -109,8 +109,7 @@ export class RouteComponent implements OnInit {
             activatedResponseId: this.activatedResponseId
           });
         }
-
-      })
+      });
 
     } else {
       this.activatedResponse = null;

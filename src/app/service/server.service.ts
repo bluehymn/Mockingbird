@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as express from 'express';
 import { RouteService } from './route.service';
 import { CollectionService } from './collection.service';
-import { Route, Collection, IServer, CollectionLocalData } from './types';
+import { Route, Collection, IServer, CollectionData } from './types';
 import { NzMessageService } from 'ng-zorro-antd';
 import { ERRORS } from '../constants/error';
 import { ResponseService } from './response.service';
@@ -28,7 +28,7 @@ export class ServerService {
     const app = express();
     const collection = this.collectionService.getCollectionById(collectionId);
     return new Promise((resolve, reject) => {
-      this.collectionService.getCollectionLocalData(collectionId).then(collectionData => {
+      this.collectionService.getCollectionLocalData(collectionId).subscribe(collectionData => {
         const server = app.listen(collection.port, () => {
           console.log(`collection ${collection.name} is started!`);
           resolve();
@@ -72,7 +72,7 @@ export class ServerService {
           this.routeService.getActivatedResponse(route.id).then(response => {
             this.collectionService
               .getCollectionLocalData(collection.id)
-              .then(data => {
+              .subscribe(data => {
                 if (data.cors) {
                   this.setCorsHeaders(res);
                 }
@@ -91,7 +91,7 @@ export class ServerService {
     });
   }
 
-  setPreFlightOption(app: expressCore.Express, collection: CollectionLocalData) {
+  setPreFlightOption(app: expressCore.Express, collection: CollectionData) {
     app.options('/*', (req, res) => {
       this.setHeaders(res, CORSHeaders);
       this.setHeaders(res, collection.headers);

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
 import { RouteService } from 'src/app/service/route.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { CreateRouteData } from 'src/app/service/types';
+import { RouteData } from 'src/app/service/types';
 import { catchError } from 'rxjs/operators';
 import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { EmptyError, of } from 'rxjs';
@@ -10,7 +10,7 @@ import { HTTP_METHODS } from 'src/app/constants/http';
 import { HttpMethod } from 'src/app/types/http.types';
 import * as _ from 'lodash';
 import { allSettled } from 'q';
-
+import * as cuid from 'cuid';
 @Component({
   selector: 'app-create-route',
   templateUrl: './create-route.component.html',
@@ -51,7 +51,8 @@ export class CreateRouteComponent implements OnInit {
       return false;
     }
 
-    const routeData: CreateRouteData = {
+    const routeData: RouteData = {
+      id: cuid(),
       collectionId: this.collectionId,
       name: this.formGroup.get('name').value,
       path: this.formGroup.get('path').value,
@@ -63,26 +64,14 @@ export class CreateRouteComponent implements OnInit {
         .createRoute(routeData)
         .pipe(
           catchError(error => {
-            let errorMessage = '';
-            if (error.error instanceof ErrorEvent) {
-              errorMessage = `Error: ${error.error.message}`;
-              return EmptyError;
-            } else {
-              errorMessage = error.error.message;
-              if (_.isArray(errorMessage)) {
-                // TODO：处理具体错误信息
-              } else {
-                this.messageService.error(errorMessage);
-              }
-              this.modal.getInstance().nzOkLoading = false;
-            }
+            this.messageService.error(error);
+            this.modal.getInstance().nzOkLoading = false;
+            return EmptyError;
           })
         )
         .subscribe(ret => {
-          if (ret.statusCode === HTTP_STATUS_CODE.CREATED) {
-            this.messageService.success('created');
-            resolve();
-          }
+          this.messageService.success('created');
+          resolve();
         });
     });
   }

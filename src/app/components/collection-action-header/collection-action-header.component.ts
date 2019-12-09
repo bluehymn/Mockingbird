@@ -107,15 +107,8 @@ export class CollectionActionHeaderComponent implements OnInit {
     const queueItemId = this.statusbarService.pushSyncQueue();
     this.collectionService
       .updateCollection(this.collection.id, data)
-      .subscribe(ret => {
-        if (ret.statusCode === HTTP_STATUS_CODE.OK) {
-          this.collectionService.updateCollectionLocally(
-            this.collection.id,
-            data
-          );
-          // this.messageService.success('Updated');
-          this.statusbarService.popSyncQueue(queueItemId);
-        }
+      .subscribe(_ => {
+        this.statusbarService.popSyncQueue(queueItemId);
       });
   }
 

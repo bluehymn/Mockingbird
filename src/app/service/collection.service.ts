@@ -5,24 +5,22 @@ import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
   Collection,
-  CollectionLocalData,
+  CollectionData,
   CreateCollectionData,
   IHttpResponse,
-  CollectionRawData,
-  IHttpResponseError
 } from './types';
-import { HTTP_STATUS_CODE, REQUEST_CODE_TEMPLATE } from '../constants/application';
+
 import { StoreService } from './store.service';
 import { IndexedDBService } from './indexedDB.service';
 
-const COLLECTION_DEFAULT_DATA: CollectionLocalData = {
-  routes: [],
-  headers: [],
-  running: false,
-  cors: true,
-  delay: 0,
-  template: REQUEST_CODE_TEMPLATE
-};
+// const COLLECTION_DEFAULT_DATA: CollectionData = {
+//   routes: [],
+//   headers: [],
+//   running: false,
+//   cors: true,
+//   delay: 0,
+//   template: REQUEST_CODE_TEMPLATE
+// };
 
 @Injectable({
   providedIn: 'root'
@@ -37,43 +35,24 @@ export class CollectionService {
   ) {}
 
   createCollection(data: CreateCollectionData) {
-    return this.httpClient.post<
-      IHttpResponse<any, HTTP_STATUS_CODE.CREATED> | IHttpResponseError
-    >('@host/collection', data);
+    return this.dbService.add('collection', data);
   }
 
   getCollections(): Observable<Collection[]> {
-    return this.httpClient
-      .get<IHttpResponse<CollectionRawData[]>>('@host/collection')
-      .pipe(
-        map(res => {
-          if (res.statusCode === HTTP_STATUS_CODE.OK) {
-            const data = res.data;
-            this.collections = data.map(item => {
-              const collection = Object.assign(
-                {},
-                COLLECTION_DEFAULT_DATA,
-                item
-              );
-              return collection;
-            });
-            return this.collections;
-          } else {
-            return [];
-          }
-        })
-      );
+    return this.dbService.getAll('collection').pipe(
+      map(res => {
+        this.collections = res || [];
+        return this.collections;
+      })
+    );
   }
 
   getCollectionById(collectionId) {
     return this.collections.find(collection => collection.id === collectionId);
   }
 
-  updateCollection(collectionId, data: Partial<CollectionRawData>) {
-    return this.httpClient.patch<IHttpResponse>(
-      `@host/collection/${collectionId}`,
-      data
-    );
+  updateCollection(collectionId, data: Partial<CollectionData>) {
+    return this.dbService.update('collection', collectionId, data);
   }
 
   updateCollectionLocally(collectionId, newValues: Partial<Collection>) {
@@ -89,26 +68,10 @@ export class CollectionService {
   }
 
   removeCollection(collectionId) {
-    return this.httpClient.delete<IHttpResponse>(
-      `@host/collection/${collectionId}`
-    );
-  }
-
-  syncLocalCollections(collections: Collection[]) {
-    this.dbService.opened$.subscribe(opened => {
-      if (opened) {
-        collections.forEach(collection => {
-          this.dbService.get('collection', collection.id).then((existed) => {
-            if (!existed) {
-              this.dbService.add('collection', _.pick(collection, ['id', 'delay', 'cors', 'headers', 'template']));
-            }
-          });
-        });
-      }
-    });
+    return this.dbService.delete('collection', collectionId);
   }
 
   getCollectionLocalData(collectionId) {
-    return this.dbService.get<CollectionLocalData>('collection', collectionId);
+    return this.dbService.get<CollectionData>('collection', collectionId);
   }
 }

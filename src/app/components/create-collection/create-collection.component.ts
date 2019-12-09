@@ -4,6 +4,7 @@ import { CollectionService } from 'src/app/service/collection.service';
 import { CreateCollectionData } from 'src/app/service/types';
 import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
+import * as cuid from 'cuid';
 
 @Component({
   selector: 'app-create-collection',
@@ -43,6 +44,7 @@ export class CreateCollectionComponent implements OnInit {
     }
 
     const collectionData: CreateCollectionData = {
+      id: cuid(),
       name: this.formGroup.get('name').value,
       port: Number(this.formGroup.get('port').value),
       prefix: this.formGroup.get('prefix').value,
@@ -52,10 +54,8 @@ export class CreateCollectionComponent implements OnInit {
       this.collectionService
         .createCollection(collectionData)
         .subscribe(ret => {
-          if (ret.statusCode === HTTP_STATUS_CODE.CREATED) {
-            this.messageService.success('created');
-            resolve();
-          }
+          this.messageService.success('created');
+          resolve();
         },
         error => {
           this.modal.close();
