@@ -95,11 +95,9 @@ export class RouteListComponent implements OnInit, OnDestroy {
       nzTitle: 'Remove Route',
       nzContent: `Are you sure you want to remove "${routeName}"`,
       nzOnOk: () => {
-        this.routeService.removeRoute(routeId).subscribe(ret => {
-          if (ret.statusCode === HTTP_STATUS_CODE.OK) {
-            this.messageService.success('removed!');
-            this.getRoutes();
-          }
+        this.routeService.removeRoute(routeId).subscribe(_ => {
+          this.messageService.success('removed!');
+          this.getRoutes();
         });
       }
     });
