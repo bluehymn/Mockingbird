@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 })
 export class IndexedDBService {
   db: IDBDatabase;
-  version = 3;
+  version = 1;
   dbRequest = window.indexedDB.open('mockingbird', this.version);
   opened$ = new BehaviorSubject<boolean>(false);
   constructor() {
@@ -31,10 +31,16 @@ export class IndexedDBService {
         const routeStore = this.db.createObjectStore('route', {
           keyPath: 'id'
         });
+        routeStore.createIndex('collectionId', 'collectionId', {
+          unique: false
+        });
       }
       if (!this.db.objectStoreNames.contains('response')) {
         const responseStore = this.db.createObjectStore('response', {
           keyPath: 'id'
+        });
+        responseStore.createIndex('routeId', 'routeId', {
+          unique: false
         });
       }
     };
@@ -58,7 +64,10 @@ export class IndexedDBService {
     return observable;
   }
 
-  get<T = any>(storeName: string, key: IDBValidKey | IDBKeyRange): Observable<T> {
+  get<T = any>(
+    storeName: string,
+    key: IDBValidKey | IDBKeyRange
+  ): Observable<T> {
     const observable = new Observable<T>(subscriber => {
       const request = this.db
         .transaction([storeName], 'readonly')
@@ -72,6 +81,63 @@ export class IndexedDBService {
         throwError(event);
         subscriber.complete();
       };
+    });
+    return observable;
+  }
+
+  getAll<T = any>(storeName: string) {
+    const observable = new Observable<T[]>(subscriber => {
+      const request = this.db
+        .transaction([storeName], 'readonly')
+        .objectStore(storeName)
+        .getAll();
+      request.onsuccess = function(event) {
+        subscriber.next(request.result);
+        subscriber.complete();
+      };
+      request.onerror = function(event) {
+        throwError(event);
+        subscriber.complete();
+      };
+    });
+    return observable;
+  }
+
+  getAllByIndex<T = any>(storeName: string, indexName: string, match: any) {
+    const observable = new Observable<T[]>(subscriber => {
+      const index = this.db
+        .transaction([storeName], 'readonly')
+        .objectStore(storeName)
+        .index(indexName);
+
+      if (match) {
+        const result = [];
+        const request = index.openCursor();
+        request.onsuccess = function(event) {
+          const cursor = event.target['result'] as IDBCursorWithValue;
+          if (cursor) {
+            result.push(cursor.value);
+            cursor.continue();
+          } else {
+            subscriber.next(result);
+            subscriber.complete();
+          }
+        };
+        request.onerror = function(event) {
+          throwError(event);
+          subscriber.complete();
+        };
+      } else {
+        const request = index.getAll();
+        request.onsuccess = function(event) {
+          subscriber.next(request.result);
+          subscriber.complete();
+        };
+        request.onerror = function(event) {
+          throwError(event);
+          subscriber.complete();
+        };
+      }
     });
     return observable;
   }
@@ -106,18 +172,21 @@ export class IndexedDBService {
     });
   }
 
-  delete(storeName: string, key: IDBValidKey | IDBKeyRange) {
-    return new Promise((resolve, reject) => {
+  delete<T = any>(storeName: string, key: IDBValidKey | IDBKeyRange) {
+    const observable = new Observable(subscriber => {
       const request = this.db
         .transaction([storeName], 'readwrite')
         .objectStore(storeName)
         .delete(key);
       request.onsuccess = function(event) {
-        resolve();
+        subscriber.next(true);
       };
       request.onerror = function(event) {
-        reject(new Error('delete failed'));
+        throwError(event);
+        subscriber.complete();
       };
     });
+
+    return observable;
   }
 }

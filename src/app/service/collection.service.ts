@@ -8,9 +8,8 @@ import {
   CollectionData,
   CreateCollectionData,
   IHttpResponse,
-  IHttpResponseError
 } from './types';
-import { HTTP_STATUS_CODE, REQUEST_CODE_TEMPLATE } from '../constants/application';
+
 import { StoreService } from './store.service';
 import { IndexedDBService } from './indexedDB.service';
 
@@ -40,19 +39,12 @@ export class CollectionService {
   }
 
   getCollections(): Observable<Collection[]> {
-    return this.httpClient
-      .get<IHttpResponse<CollectionData[]>>('@host/collection')
-      .pipe(
-        map(res => {
-          if (res.statusCode === HTTP_STATUS_CODE.OK) {
-            const data = res.data;
-            this.collections = data;
-            return this.collections;
-          } else {
-            return [];
-          }
-        })
-      );
+    return this.dbService.getAll('collection').pipe(
+      map(res => {
+        this.collections = res || [];
+        return this.collections;
+      })
+    );
   }
 
   getCollectionById(collectionId) {
@@ -79,23 +71,7 @@ export class CollectionService {
   }
 
   removeCollection(collectionId) {
-    return this.httpClient.delete<IHttpResponse>(
-      `@host/collection/${collectionId}`
-    );
-  }
-
-  syncLocalCollections(collections: Collection[]) {
-    this.dbService.opened$.subscribe(opened => {
-      if (opened) {
-        collections.forEach(collection => {
-          this.dbService.get('collection', collection.id).subscribe((existed) => {
-            if (!existed) {
-              this.dbService.add('collection', _.pick(collection, ['id', 'delay', 'cors', 'headers', 'template']));
-            }
-          });
-        });
-      }
-    });
+    return this.dbService.delete('collection', collectionId);
   }
 
   getCollectionLocalData(collectionId) {

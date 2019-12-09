@@ -38,26 +38,18 @@ export type CreateCollectionData = Pick<Collection, 'id' | 'name' | 'port'> &
   Partial<Pick<Collection, 'prefix' | 'headers' | 'proxyUrl'>>;
 
 // Route
-export interface RouteRawData {
+export interface RouteData {
   id: string;
   collectionId: string;
   name: string;
   path: string;
   method: HttpMethod;
   description: string;
-}
-export interface RouteLocalData {
-  ignore: boolean;
-  activatedResponseId: string;
+  ignore?: boolean;
+  activatedResponseId?: string;
 }
 
-export type CreateRouteData = Pick<
-  Route,
-  'collectionId' | 'method' | 'path' | 'name'
-> &
-  Partial<Pick<Route, 'description'>>;
-
-export type Route = RouteRawData & RouteLocalData;
+export type Route = RouteData;
 
 // Response
 export interface ResponseRawData {

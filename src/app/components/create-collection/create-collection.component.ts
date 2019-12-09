@@ -4,7 +4,7 @@ import { CollectionService } from 'src/app/service/collection.service';
 import { CreateCollectionData } from 'src/app/service/types';
 import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
-const cuid = require('cuid');
+import * as cuid from 'cuid';
 
 @Component({
   selector: 'app-create-collection',
