@@ -99,14 +99,13 @@ export class RouteComponent implements OnInit {
 
   setActivatedResponse(responseId) {
     if (responseId) {
-      const response = this.responseService.getResponse(responseId).subscribe(ret => {
-        if (ret.statusCode === HTTP_STATUS_CODE.OK) {
-          this.activatedResponse = ret.data;
+      const response = this.responseService
+        .getResponse(responseId)
+        .subscribe(ret => {
+          this.activatedResponse = ret;
           this.activatedResponseId = responseId;
-          this.responseBody = ret.data.body;
-        }
-      });
-
+          this.responseBody = ret.body;
+        });
     } else {
       this.activatedResponse = null;
       this.activatedResponseId = null;
@@ -115,7 +114,7 @@ export class RouteComponent implements OnInit {
   }
 
   responseChange(key, value) {
-    this.responseChange$.next({[key]: value});
+    this.responseChange$.next({ [key]: value });
     if (key === 'body') {
       this.responseBody = value;
     }
@@ -124,39 +123,53 @@ export class RouteComponent implements OnInit {
   updateResponse(data: Partial<Response>) {
     const queueItemId = this.statusbarService.pushSyncQueue();
     this.responseService
-    .updateResponse(this.activatedResponse.id, data)
-    .subscribe(res => {
-      if (res.statusCode === HTTP_STATUS_CODE.OK) {
+      .updateResponse(this.activatedResponse.id, data)
+      .subscribe(res => {
         // this.messageService.success('Updated');
         this.statusbarService.popSyncQueue(queueItemId);
-      }
-    });
+      });
   }
 
   subscribeChanges() {
-    const subscribeResponseChanges = this.responseChange$.pipe(debounceTime(1000)).subscribe(res => {
-      this.updateResponse(res);
-    });
+    const subscribeResponseChanges = this.responseChange$
+      .pipe(debounceTime(1000))
+      .subscribe(res => {
+        this.updateResponse(res);
+      });
 
-    const subscribeName = this.name$.pipe(debounceTime(1000)).subscribe(name => {
-      this.updateRoute({name});
-    });
+    const subscribeName = this.name$
+      .pipe(debounceTime(1000))
+      .subscribe(name => {
+        this.updateRoute({ name });
+      });
 
-    const subscribeMethod = this.method$.pipe(debounceTime(1000)).subscribe(method => {
-      this.updateRoute({method});
-      this.serverService.haveUpdate(this.route.collectionId);
-    });
+    const subscribeMethod = this.method$
+      .pipe(debounceTime(1000))
+      .subscribe(method => {
+        this.updateRoute({ method });
+        this.serverService.haveUpdate(this.route.collectionId);
+      });
 
-    const subscribePath = this.path$.pipe(debounceTime(1000)).subscribe(path => {
-      this.updateRoute({path});
-      this.serverService.haveUpdate(this.route.collectionId);
-    });
+    const subscribePath = this.path$
+      .pipe(debounceTime(1000))
+      .subscribe(path => {
+        this.updateRoute({ path });
+        this.serverService.haveUpdate(this.route.collectionId);
+      });
 
-    const subscribeDescription = this.description$.pipe(debounceTime(1000)).subscribe(description => {
-      this.updateRoute({description});
-    });
+    const subscribeDescription = this.description$
+      .pipe(debounceTime(1000))
+      .subscribe(description => {
+        this.updateRoute({ description });
+      });
 
-    this.subscriptions.push(subscribeResponseChanges, subscribeName, subscribeMethod, subscribePath, subscribeDescription);
+    this.subscriptions.push(
+      subscribeResponseChanges,
+      subscribeName,
+      subscribeMethod,
+      subscribePath,
+      subscribeDescription
+    );
   }
 
   unsubscribeChanges() {
@@ -165,9 +178,7 @@ export class RouteComponent implements OnInit {
 
   updateRoute(data: Partial<Route>) {
     const queueItemId = this.statusbarService.pushSyncQueue();
-    this.routeService
-    .updateRoute(this.route.id, data)
-    .subscribe(ret => {
+    this.routeService.updateRoute(this.route.id, data).subscribe(ret => {
       // this.messageService.success(`${this.name} update successful`);
       this.routeService.updateRouteListData$.next({
         id: this.route.id,
@@ -213,5 +224,4 @@ export class RouteComponent implements OnInit {
       }
     });
   }
-
 }

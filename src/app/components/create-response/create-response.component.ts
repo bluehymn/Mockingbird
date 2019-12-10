@@ -2,9 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ResponseService } from 'src/app/service/response.service';
 import { NzMessageService, NzModalRef, valueFunctionProp } from 'ng-zorro-antd';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { CreateResponseData } from 'src/app/service/types';
+import { ResponseData } from 'src/app/service/types';
 import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { HTTP_STATUS_CODES } from 'src/app/constants/http';
+import * as cuid from 'cuid';
 
 @Component({
   selector: 'app-create-response',
@@ -13,14 +14,14 @@ import { HTTP_STATUS_CODES } from 'src/app/constants/http';
 })
 export class CreateResponseComponent implements OnInit {
   @Input()
-  routeId: string; 
+  routeId: string;
   formGroup: FormGroup;
   statusCodes = [];
   constructor(
     private responseService: ResponseService,
     private messageService: NzMessageService,
     private modal: NzModalRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initForm();
@@ -29,19 +30,19 @@ export class CreateResponseComponent implements OnInit {
 
   initForm() {
     this.formGroup = new FormGroup({
-      name: new FormControl('unnamed (OK)', [
-        Validators.required
-      ]),
-      statusCode: new FormControl(200, [
-        Validators.required
-      ])
+      name: new FormControl('unnamed (OK)', [Validators.required]),
+      statusCode: new FormControl(200, [Validators.required])
     });
 
     this.formGroup.get('statusCode').valueChanges.subscribe(statusCode => {
       const nameControl = this.formGroup.get('name');
       const name = nameControl.value;
       if (!nameControl.dirty) {
-        nameControl.setValue(`unnamed (${this.statusCodes.find(item => item.code == statusCode).text})`);
+        nameControl.setValue(
+          `unnamed (${
+            this.statusCodes.find(item => item.code === statusCode).text
+          })`
+        );
       }
     });
   }
@@ -53,24 +54,25 @@ export class CreateResponseComponent implements OnInit {
       return false;
     }
 
-    const responseData: CreateResponseData = {
+    const responseData: ResponseData = {
+      id: cuid(),
       routeId: this.routeId,
       name: this.formGroup.get('name').value,
       statusCode: this.formGroup.get('statusCode').value,
-      body: '{}',
+      headers: [],
+      body: '{}'
     };
 
     return new Promise((resolve, reject) => {
-      this.responseService.createResponse(responseData).subscribe(ret => {
-        if (ret.statusCode === HTTP_STATUS_CODE.CREATED) {
+      this.responseService.createResponse(responseData).subscribe(
+        ret => {
           this.messageService.success('created');
           resolve();
+        },
+        error => {
+          this.modal.close();
         }
-      },
-      error => {
-        this.modal.close();
-      });
+      );
     });
   }
-
 }

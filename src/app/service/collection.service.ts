@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
   Collection,
   CollectionData,
-  CreateCollectionData,
-  IHttpResponse,
 } from './types';
 
 import { StoreService } from './store.service';
@@ -29,12 +26,10 @@ export class CollectionService {
   activeCollectionId$ = new BehaviorSubject<string>(null);
   collections: Collection[] = [];
   constructor(
-    private httpClient: HttpClient,
-    private storeService: StoreService,
     private dbService: IndexedDBService
   ) {}
 
-  createCollection(data: CreateCollectionData) {
+  createCollection(data: CollectionData) {
     return this.dbService.add('collection', data);
   }
 

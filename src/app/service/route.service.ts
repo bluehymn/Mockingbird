@@ -2,12 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import {
   Route,
-  IHttpResponse,
   RouteData,
-  ResponseRawData
+  ResponseData
 } from './types';
-import { HTTP_STATUS_CODE } from '../constants/application';
-import { HttpClient } from '@angular/common/http';
 import * as _ from 'lodash';
 import { IndexedDBService } from './indexedDB.service';
 import { ResponseService } from './response.service';
@@ -18,7 +15,7 @@ import { ResponseService } from './response.service';
 export class RouteService {
   activatedRouteId$ = new BehaviorSubject<string>(null);
   updateRouteListData$ = new Subject<Partial<Route>>();
-  constructor(private httpClient: HttpClient, private dbService: IndexedDBService, private responseService: ResponseService) {}
+  constructor(private dbService: IndexedDBService, private responseService: ResponseService) {}
 
   createRoute(data: RouteData) {
     return this.dbService.add('route', data);
@@ -44,14 +41,12 @@ export class RouteService {
     this.activatedRouteId$.next(routeId);
   }
 
-  getActivatedResponse(routeId: string): Promise<ResponseRawData> {
+  getActivatedResponse(routeId: string): Promise<ResponseData> {
     return new Promise((resolve, reject) => {
       this.dbService.get<RouteData>('route', routeId).subscribe(route => {
         if (route) {
           this.responseService.getResponse(route.activatedResponseId).subscribe(ret => {
-            if (ret.statusCode === HTTP_STATUS_CODE.OK) {
-              resolve(ret.data);
-            }
+            resolve(ret);
           });
         } else {
           this.responseService.getResponsesByRouteId(routeId).subscribe(responses => {

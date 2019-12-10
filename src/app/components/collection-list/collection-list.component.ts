@@ -24,8 +24,10 @@ export class CollectionListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.dbService.opened$.subscribe(_ => {
-      this.getCollections();
+    this.dbService.opened$.subscribe(opened => {
+      if (opened) {
+        this.getCollections();
+      }
     });
   }
 
