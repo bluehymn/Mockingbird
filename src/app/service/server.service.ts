@@ -66,8 +66,9 @@ export class ServerService {
 
   setRoutes(app: expressCore.Express, collection: Collection, routes: Route[]) {
     routes.forEach(route => {
+      const path = collection.prefix ? `/${collection.prefix}/${route.path}` : `/${route.path}`;
       app[route.method](
-        `/${collection.prefix}/${route.path}`,
+        path,
         (req: expressCore.Request, res: expressCore.Response) => {
           this.routeService.getActivatedResponse(route.id).then(response => {
             this.collectionService

@@ -34,8 +34,6 @@ export interface CollectionData {
 
 export type Collection = CollectionData;
 
-export type CreateCollectionData = Pick<Collection, 'id' | 'name' | 'port'> &
-  Partial<Pick<Collection, 'prefix' | 'headers' | 'proxyUrl'>>;
 
 // Route
 export interface RouteData {
@@ -52,7 +50,7 @@ export interface RouteData {
 export type Route = RouteData;
 
 // Response
-export interface ResponseRawData {
+export interface ResponseData {
   id: string;
   routeId: string;
   body: string;
@@ -65,12 +63,7 @@ export interface ResponseRawData {
 //   id: string;
 // }
 
-export type CreateResponseData = Pick<
-  Response,
-  'routeId' | 'name' | 'body' | 'statusCode'
->;
-
-export type Response = ResponseRawData;
+export type Response = ResponseData;
 
 export interface IHttpHeader {
   key: string;

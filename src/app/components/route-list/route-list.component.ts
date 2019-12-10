@@ -34,18 +34,20 @@ export class RouteListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const subCollectionId = this.collectionService.activeCollectionId$.subscribe(
+    const collectionIdSubscription = this.collectionService.activeCollectionId$.subscribe(
       collectionId => {
         this.collectionId = collectionId;
-        this.getRoutes();
+        if (collectionId) {
+          this.getRoutes();
+        }
       }
     );
-    const subscribeUpdateLocalRouteData = this.routeService.updateRouteListData$.subscribe(
+    const updateLocalRouteDataSubscription = this.routeService.updateRouteListData$.subscribe(
       data => {
         this.updateRouteData(data);
       }
     );
-    this.subscriptions.push(subCollectionId, subscribeUpdateLocalRouteData);
+    this.subscriptions.push(collectionIdSubscription, updateLocalRouteDataSubscription);
   }
 
   ngOnDestroy() {
