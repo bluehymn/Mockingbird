@@ -103,25 +103,19 @@ export class IndexedDBService {
     return observable;
   }
 
-  getAllByIndex<T = any>(storeName: string, indexName: string, match: any) {
+  getAllByIndex<T = any>(storeName: string, indexName: string, query: any) {
     const observable = new Observable<T[]>(subscriber => {
       const index = this.db
         .transaction([storeName], 'readonly')
         .objectStore(storeName)
         .index(indexName);
 
-      if (match) {
-        const result = [];
-        const request = index.openCursor();
+      if (query) {
+        const request = index.getAll(query);
         request.onsuccess = function(event) {
-          const cursor = event.target['result'] as IDBCursorWithValue;
-          if (cursor) {
-            result.push(cursor.value);
-            cursor.continue();
-          } else {
-            subscriber.next(result);
-            subscriber.complete();
-          }
+          const result = event.target['result'];
+          subscriber.next(result);
+          subscriber.complete();
         };
         request.onerror = function(event) {
           throwError(event);

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import {
   Route,
@@ -34,9 +33,7 @@ export class RouteService {
   }
 
   updateRoute(routeId: string, newValues: Partial<RouteData>) {
-    return this.httpClient.patch<IHttpResponse>('@host/route/' + routeId, {
-      ...newValues
-    });
+    return this.dbService.update('route', routeId, {...newValues});
   }
 
   removeRoute(routeId) {
@@ -45,18 +42,6 @@ export class RouteService {
 
   setActiveRoute(routeId) {
     this.activatedRouteId$.next(routeId);
-  }
-
-  updateRouteLocalData(data: Partial<Route>) {
-    const newData = _.pick(data, ['id', 'ignore', 'activatedResponseId']);
-    this.updateRouteListData$.next(data);
-    this.dbService.get('route', data.id).subscribe(route => {
-      if (route) {
-        this.dbService.update('route', data.id, newData);
-      } else {
-        this.dbService.add('route', newData);
-      }
-    });
   }
 
   getActivatedResponse(routeId: string): Promise<ResponseRawData> {

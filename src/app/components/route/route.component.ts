@@ -104,10 +104,6 @@ export class RouteComponent implements OnInit {
           this.activatedResponse = ret.data;
           this.activatedResponseId = responseId;
           this.responseBody = ret.data.body;
-          this.routeService.updateRouteLocalData({
-            id: this.route.id,
-            activatedResponseId: this.activatedResponseId
-          });
         }
       });
 
@@ -138,11 +134,11 @@ export class RouteComponent implements OnInit {
   }
 
   subscribeChanges() {
-    const subscribeResponseChanges = this.responseChange$.pipe(debounceTime(2000)).subscribe(res => {
+    const subscribeResponseChanges = this.responseChange$.pipe(debounceTime(1000)).subscribe(res => {
       this.updateResponse(res);
     });
 
-    const subscribeName = this.name$.pipe(debounceTime(2000)).subscribe(name => {
+    const subscribeName = this.name$.pipe(debounceTime(1000)).subscribe(name => {
       this.updateRoute({name});
     });
 
@@ -151,12 +147,12 @@ export class RouteComponent implements OnInit {
       this.serverService.haveUpdate(this.route.collectionId);
     });
 
-    const subscribePath = this.path$.pipe(debounceTime(2000)).subscribe(path => {
+    const subscribePath = this.path$.pipe(debounceTime(1000)).subscribe(path => {
       this.updateRoute({path});
       this.serverService.haveUpdate(this.route.collectionId);
     });
 
-    const subscribeDescription = this.description$.pipe(debounceTime(2000)).subscribe(description => {
+    const subscribeDescription = this.description$.pipe(debounceTime(1000)).subscribe(description => {
       this.updateRoute({description});
     });
 
@@ -173,11 +169,11 @@ export class RouteComponent implements OnInit {
     .updateRoute(this.route.id, data)
     .subscribe(ret => {
       // this.messageService.success(`${this.name} update successful`);
-      this.statusbarService.popSyncQueue(queueItemId);
-      this.routeService.updateRouteLocalData({
+      this.routeService.updateRouteListData$.next({
         id: this.route.id,
         ...data
       });
+      this.statusbarService.popSyncQueue(queueItemId);
     });
   }
 
