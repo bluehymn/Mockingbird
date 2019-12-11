@@ -7,11 +7,16 @@
   &:nth-child(1) {
     padding-top: 0;
   }
+  span {
+    color: $gray-6;
+    font-weight: normal;
+  }
 }
 
 .row {
   display: flex;
   align-items: center;
+  padding-bottom: 6px;
   .title {
     padding-right: 12px;
   }
@@ -33,4 +38,8 @@
       color: $red-5;
     }
   }
+}
+
+.proxy-url {
+  width: 300px;
 }

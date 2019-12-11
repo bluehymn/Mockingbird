@@ -3,7 +3,29 @@
 </div>
 <div class="row">
   <span class="title">Enable CORS: </span
-  ><nz-switch [(ngModel)]="enableCors" (ngModelChange)="corsChange($event)"></nz-switch>
+  ><nz-switch
+    [(ngModel)]="enableCors"
+    (ngModelChange)="corsChange($event)"
+  ></nz-switch>
+</div>
+
+<div class="section-title">
+  Proxy <span>(proxy to specified host for unmatched routes)</span>
+</div>
+
+<div class="row">
+  <span class="title">Enable Proxy: </span
+  ><nz-switch
+    [(ngModel)]="enableProxy"
+  ></nz-switch>
+</div>
+<div class="row">
+  <input
+    class="proxy-url"
+    placeholder="input host url"
+    nz-input
+    [(ngModel)]="proxyUrl"
+  />
 </div>
 
 <div class="section-title">

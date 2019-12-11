@@ -19,7 +19,6 @@ export class CollectionListComponent implements OnInit {
     private collectionService: CollectionService,
     private modalService: NzModalService,
     private messageService: NzMessageService,
-    private storeService: StoreService,
     private dbService: IndexedDBService
   ) {}
 
@@ -29,25 +28,29 @@ export class CollectionListComponent implements OnInit {
         this.getCollections();
       }
     });
+    this.collectionService.updateCollectionListData$.subscribe(_ => {
+      this.getCollections();
+    });
   }
 
   getCollections() {
     this.collectionService.getCollections().subscribe(res => {
       this.collections = res;
       if (this.collections.length) {
-        this.activateCollection(this.collections[0].id);
+        if (!this.activatedCollectionId) {
+          this.setActivateCollection(this.collections[0].id);
+        }
       }
-      this.updateLocalCollections(this.collections);
     });
   }
 
-  activateCollection(collectionId) {
+  setActivateCollection(collectionId) {
     this.activatedCollectionId = collectionId;
     this.collectionService.activeCollectionId$.next(collectionId);
   }
 
   handleClick(collectionId) {
-    this.activateCollection(collectionId);
+    this.setActivateCollection(collectionId);
   }
 
   openCreateModal() {
@@ -82,7 +85,4 @@ export class CollectionListComponent implements OnInit {
     });
   }
 
-  updateLocalCollections(collections: Collection[]) {
-    // this.collectionService.syncLocalCollections(collections);
-  }
 }

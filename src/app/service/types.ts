@@ -23,6 +23,7 @@ export interface CollectionData {
   name: string;
   port: number;
   prefix: string;
+  enableProxy: boolean;
   proxyUrl: string;
   headers: { key: string; value: string }[];
   routes: Route[];
