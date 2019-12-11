@@ -47,8 +47,8 @@ export class ServerService {
         this.setPreFlightOption(app, collectionData);
         this.routeService.getRoutes(collectionId).subscribe(routes => {
           this.setRoutes(app, collection, routes);
+          this.setProxy(app, collection);
         });
-        this.setProxy(app, collection);
       });
     });
   }
