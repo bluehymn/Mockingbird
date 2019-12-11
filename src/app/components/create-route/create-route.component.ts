@@ -11,6 +11,7 @@ import { HttpMethod } from 'src/app/types/http.types';
 import * as _ from 'lodash';
 import { allSettled } from 'q';
 import * as cuid from 'cuid';
+import { ServerService } from 'src/app/service/server.service';
 @Component({
   selector: 'app-create-route',
   templateUrl: './create-route.component.html',
@@ -23,7 +24,8 @@ export class CreateRouteComponent implements OnInit {
   constructor(
     private routeService: RouteService,
     private messageService: NzMessageService,
-    private modal: NzModalRef
+    private modal: NzModalRef,
+    private serverService: ServerService
   ) {
     this.httpMethods = [...HTTP_METHODS].map(method => ({
       value: method,
@@ -71,6 +73,7 @@ export class CreateRouteComponent implements OnInit {
         )
         .subscribe(ret => {
           this.messageService.success('created');
+          this.serverService.serverNeedRestart$.next(this.collectionId);
           resolve();
         });
     });
