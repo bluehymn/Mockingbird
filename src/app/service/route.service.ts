@@ -44,7 +44,7 @@ export class RouteService {
   getActivatedResponse(routeId: string): Promise<ResponseData> {
     return new Promise((resolve, reject) => {
       this.dbService.get<RouteData>('route', routeId).subscribe(route => {
-        if (route) {
+        if (route.activatedResponseId) {
           this.responseService.getResponse(route.activatedResponseId).subscribe(ret => {
             resolve(ret);
           });

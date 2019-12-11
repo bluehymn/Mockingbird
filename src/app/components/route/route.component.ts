@@ -105,6 +105,9 @@ export class RouteComponent implements OnInit {
           this.activatedResponse = ret;
           this.activatedResponseId = responseId;
           this.responseBody = ret.body;
+          this.updateRoute({
+            activatedResponseId: responseId
+          });
         });
     } else {
       this.activatedResponse = null;
