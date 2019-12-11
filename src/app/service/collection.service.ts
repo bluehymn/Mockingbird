@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
@@ -7,17 +7,7 @@ import {
   CollectionData,
 } from './types';
 
-import { StoreService } from './store.service';
 import { IndexedDBService } from './indexedDB.service';
-
-// const COLLECTION_DEFAULT_DATA: CollectionData = {
-//   routes: [],
-//   headers: [],
-//   running: false,
-//   cors: true,
-//   delay: 0,
-//   template: REQUEST_CODE_TEMPLATE
-// };
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +15,7 @@ import { IndexedDBService } from './indexedDB.service';
 export class CollectionService {
   activeCollectionId$ = new BehaviorSubject<string>(null);
   collections: Collection[] = [];
+  updateCollectionListData$ = new Subject<Partial<Collection>>();
   constructor(
     private dbService: IndexedDBService
   ) {}
@@ -46,27 +37,15 @@ export class CollectionService {
     return this.collections.find(collection => collection.id === collectionId);
   }
 
-  updateCollection(collectionId, data: Partial<CollectionData>) {
-    return this.dbService.update('collection', collectionId, data);
-  }
-
-  updateCollectionLocally(collectionId, newValues: Partial<Collection>) {
-    const collection = this.collections.find(item => item.id === collectionId);
-    const propertyNames = Reflect.ownKeys(newValues);
-    propertyNames.forEach(propertyName => {
-      collection[propertyName] = newValues[propertyName];
-    });
-    this.dbService.update('collection', collectionId, {
-      id: collectionId,
-      ...newValues
-    });
+  updateCollection(collectionId, newValues: Partial<CollectionData>) {
+    return this.dbService.update('collection', collectionId, newValues);
   }
 
   removeCollection(collectionId) {
     return this.dbService.delete('collection', collectionId);
   }
 
-  getCollectionLocalData(collectionId) {
+  getCollectionData(collectionId) {
     return this.dbService.get<CollectionData>('collection', collectionId);
   }
 }

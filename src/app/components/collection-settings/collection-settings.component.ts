@@ -1,16 +1,12 @@
 import {
   Component,
   OnInit,
-  Input,
-  ComponentRef,
-  ViewChildren,
-  Renderer2,
-  QueryList
+  Input
 } from '@angular/core';
 import { IHttpHeader } from 'src/app/service/types';
 import { HEADER_KEYS, HEADER_VALUES } from 'src/app/constants/http';
-import { NzAutocompleteComponent } from 'ng-zorro-antd';
 import { CollectionService } from 'src/app/service/collection.service';
+import { ServerService } from 'src/app/service/server.service';
 
 @Component({
   selector: 'app-collection-settings',
@@ -21,13 +17,15 @@ export class CollectionSettingsComponent implements OnInit {
   @Input()
   collectionId: string;
   enableCors = false;
+  enableProxy = false;
+  proxyUrl = '';
   headers: (IHttpHeader & {
     uuid: string;
     keyOptions: any[];
     valueOptions: any[];
   })[] = [];
   suggestionOptions = [];
-  constructor(private collectionService: CollectionService) {}
+  constructor(private collectionService: CollectionService, private serverService: ServerService) {}
 
   ngOnInit() {
     this.getCollectionLocalData();
@@ -35,10 +33,12 @@ export class CollectionSettingsComponent implements OnInit {
 
   getCollectionLocalData() {
     this.collectionService
-      .getCollectionLocalData(this.collectionId)
+      .getCollectionData(this.collectionId)
       .subscribe(data => {
         if (data) {
           this.enableCors = data.cors;
+          this.proxyUrl = data.proxyUrl;
+          this.enableProxy = data.enableProxy;
           if (data.headers && data.headers.length) {
             this.headers = data.headers.map(item => ({
               uuid: (new Date().getTime() + Math.random() * 10000).toString(),
@@ -87,12 +87,17 @@ export class CollectionSettingsComponent implements OnInit {
   }
 
   updateCollection() {
-    this.collectionService.updateCollectionLocally(this.collectionId, {
+    this.collectionService.updateCollection(this.collectionId, {
       cors: this.enableCors,
+      enableProxy: this.enableProxy,
+      proxyUrl: this.proxyUrl,
       headers: this.headers.map(item => ({
         key: item.key,
         value: item.value
       }))
+    }).subscribe(ret => {
+      this.collectionService.updateCollectionListData$.next(null);
+      this.serverService.serverNeedRestart$.next(this.collectionId);
     });
   }
 }

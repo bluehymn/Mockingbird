@@ -68,7 +68,7 @@ export class CollectionActionHeaderComponent implements OnInit {
       .start(this.collection.id)
       .then(() => {
         this.collectionIsRunning = true;
-        this.collectionService.updateCollectionLocally(this.collection.id, {
+        this.collectionService.updateCollection(this.collection.id, {
           running: true
         });
       })
@@ -80,7 +80,7 @@ export class CollectionActionHeaderComponent implements OnInit {
   stop() {
     return this.serverService.stop(this.collection.id).then(() => {
       this.collectionIsRunning = false;
-      this.collectionService.updateCollectionLocally(this.collection.id, {
+      this.collectionService.updateCollection(this.collection.id, {
         running: false
       });
       return true;
@@ -109,6 +109,8 @@ export class CollectionActionHeaderComponent implements OnInit {
       .updateCollection(this.collection.id, data)
       .subscribe(_ => {
         this.statusbarService.popSyncQueue(queueItemId);
+        this.collectionService.updateCollectionListData$.next(null);
+        this.serverService.serverNeedRestart$.next(this.collection.id);
       });
   }
 
