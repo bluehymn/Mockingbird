@@ -17,7 +17,6 @@ import {
   fromEvent
 } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-const jsonminify = require('jsonminify');
 
 declare var amdRequire: any;
 
@@ -30,7 +29,7 @@ export class ResponseBodyComponent implements OnInit, OnDestroy {
   _responseBody: string;
   @Input()
   set responseBody(value) {
-    if (jsonminify(value) === this._responseBody) {
+    if (value === this._responseBody) {
       return;
     }
     this.firstChange = true;
@@ -107,8 +106,8 @@ export class ResponseBodyComponent implements OnInit, OnDestroy {
     const subscription = this.editorChange$
       .pipe(debounceTime(500))
       .subscribe(responseBody => {
-        this.responseBodyChange.emit(jsonminify(responseBody));
-        this._responseBody = jsonminify(responseBody);
+        this.responseBodyChange.emit(responseBody);
+        this._responseBody = responseBody;
       });
     this.subscriptions.push(subscription);
   }

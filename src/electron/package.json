@@ -1,0 +1,21 @@
+{
+  "name": "mockingbird",
+  "description": "Mockingbird can help you to manage mock servers easily, It can generate typescript interfaces and request code automatically.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Wu jing",
+    "email": "bluehymn@qq.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/bluehymn/Mockingbird",
+  "bugs": {
+    "url": "https://github.com/bluehymn/Mockingbird/issues"
+  },
+  "main": "electron-main.js",
+  "dependencies": {
+    "cuid": "^2.1.6",
+    "express": "^4.17.1",
+    "http-proxy-middleware": "^0.20.0",
+    "request": "^2.88.0"
+  }
+}

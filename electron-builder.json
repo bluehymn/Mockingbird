@@ -1,0 +1,16 @@
+{
+  "appId": "com.mockingbird.app",
+  "productName": "Mockingbird",
+  "directories": {
+    "output": "packages",
+    "app": "dist"
+  },
+  "win": {
+    "target": "nsis",
+    "publisherName": "bluehymn",
+    "rfc3161TimeStampServer": "http://timestamp.digicert.com"
+  },
+  "nsis": {
+    "artifactName": "mockingbird.setup.${version}.${ext}"
+  }
+}

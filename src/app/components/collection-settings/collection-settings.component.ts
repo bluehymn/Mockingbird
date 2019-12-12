@@ -53,7 +53,7 @@ export class CollectionSettingsComponent implements OnInit {
 
   corsChange(enable) {}
 
-  addHeader() {
+  addHeader(event) {
     const header = {
       uuid: (new Date().getTime() + Math.random() * 10000).toString(),
       key: '',

@@ -71,7 +71,7 @@ export class RouteListComponent implements OnInit, OnDestroy {
     this.routeService.setActiveRoute(routeId);
   }
 
-  openCreateModal() {
+  openCreateModal(event) {
     this.modalService.create({
       nzTitle: 'New Route',
       nzContent: CreateRouteComponent,

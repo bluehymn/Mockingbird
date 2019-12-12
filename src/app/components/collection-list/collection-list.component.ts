@@ -53,7 +53,7 @@ export class CollectionListComponent implements OnInit {
     this.setActivateCollection(collectionId);
   }
 
-  openCreateModal() {
+  openCreateModal(event) {
     this.modalService.create({
       nzTitle: 'New Collection',
       nzContent: CreateCollectionComponent,
