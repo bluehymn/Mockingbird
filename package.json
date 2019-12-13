@@ -4,12 +4,18 @@
   "scripts": {
     "serve": "concurrently \"npm run serve:app\" \"wait-on -d 10000 ./dist && npm run serve:electron\"",
     "serve:app": "ng build --configuration=development --sourceMap=true --watch --output-hashing=all",
-    "serve:electron": "concurrently \"tsc ./src/electron/electron-main.ts --Outdir ./dist\" \"wait-on -d 2000 ./dist/electron-main.js && electron ./dist/electron-main.js --serve --remote-debugging-port=9222\"",
-    "build:prod": "rm -rf ./dist && ng build --prod --configuration=production",
+    "serve:electron": "concurrently \"npm run compile-electron-main\" \"wait-on -d 2000 ./dist/electron-main.js && electron ./dist/electron-main.js --serve --remote-debugging-port=9222\"",
+    "compile-electron-main": "tsc .\/src\/electron\/electron-main.ts --Outdir .\/dist",
+    "build:prod": "ng build --prod --configuration=production && npm run compile-electron-main",
+    "build-win:prod": "ng build --prod --configuration=production && npm run compile-electron-main && copy .\\src\\electron\\package.json .\\dist",
     "clean-packages": "rm -rf ./packages",
+    "clean-packages-win": "del /s /q .\\packages",
     "package:win": "npm run clean-packages && electron-builder --win --config electron-builder.json",
     "package:linux": "npm run clean-packages && electron-builder --linux --config electron-builder.json",
-    "package:mac": "npm run clean-packages && electron-builder --mac --config electron-builder.json"
+    "package:mac": "npm run clean-packages && electron-builder --mac --config electron-builder.json",
+    "package-win:win": "npm run clean-packages-win && electron-builder --win --config electron-builder.json",
+    "package-win:linux": "npm run clean-packages-win && electron-builder --linux --config electron-builder.json",
+    "package-win:mac": "npm run clean-packages-win && electron-builder --mac --config electron-builder.json"
   },
   "private": true,
   "dependencies": {
@@ -25,9 +31,11 @@
     "@types/request": "^2.48.3",
     "core-js": "^2.5.4",
     "cuid": "^2.1.6",
-    "electron": "^7.1.2",
+    "electron": "^7.1.3",
+    "electron-builder": "^21.2.0",
     "electron-store": "^5.1.0",
     "express": "^4.17.1",
+    "http-proxy-middleware": "^0.20.0",
     "json-to-ts": "^1.6.0",
     "jsonminify": "^0.4.1",
     "lodash": "^4.17.15",
@@ -62,5 +70,12 @@
     "tslint": "~5.9.1",
     "typescript": "~3.5.3",
     "wait-on": "^3.3.0"
+  },
+  "build": {
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/",
+      "quiet": false,
+      "verifyChecksum": false
+    }
   }
 }

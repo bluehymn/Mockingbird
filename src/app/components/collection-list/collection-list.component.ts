@@ -5,6 +5,7 @@ import { NzModalService, NzMessageService } from 'ng-zorro-antd';
 import { CreateCollectionComponent } from '../create-collection/create-collection.component';
 import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { StoreService } from 'src/app/service/store.service';
+import { IndexedDBService } from 'src/app/service/indexedDB.service';
 
 @Component({
   selector: 'app-collection-list',
@@ -18,33 +19,41 @@ export class CollectionListComponent implements OnInit {
     private collectionService: CollectionService,
     private modalService: NzModalService,
     private messageService: NzMessageService,
-    private storeService: StoreService
+    private dbService: IndexedDBService
   ) {}
 
   ngOnInit() {
-    this.getCollections();
+    this.dbService.opened$.subscribe(opened => {
+      if (opened) {
+        this.getCollections();
+      }
+    });
+    this.collectionService.updateCollectionListData$.subscribe(_ => {
+      this.getCollections();
+    });
   }
 
   getCollections() {
     this.collectionService.getCollections().subscribe(res => {
       this.collections = res;
       if (this.collections.length) {
-        this.activateCollection(this.collections[0].id);
+        if (!this.activatedCollectionId) {
+          this.setActivateCollection(this.collections[0].id);
+        }
       }
-      this.updateLocalCollections(this.collections);
     });
   }
 
-  activateCollection(collectionId) {
+  setActivateCollection(collectionId) {
     this.activatedCollectionId = collectionId;
     this.collectionService.activeCollectionId$.next(collectionId);
   }
 
   handleClick(collectionId) {
-    this.activateCollection(collectionId);
+    this.setActivateCollection(collectionId);
   }
 
-  openCreateModal() {
+  openCreateModal(event) {
     this.modalService.create({
       nzTitle: 'New Collection',
       nzContent: CreateCollectionComponent,
@@ -69,16 +78,11 @@ export class CollectionListComponent implements OnInit {
       nzContent: `Are you sure you want to remove "${collectionName}"`,
       nzOnOk: () => {
         this.collectionService.removeCollection(collectionId).subscribe(ret => {
-          if (ret.statusCode === HTTP_STATUS_CODE.OK) {
-            this.messageService.success('removed!');
-            this.getCollections();
-          }
+          this.messageService.success('removed!');
+          this.getCollections();
         });
       }
     });
   }
 
-  updateLocalCollections(collections: Collection[]) {
-    this.collectionService.syncLocalCollections(collections);
-  }
 }

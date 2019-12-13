@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CollectionService } from 'src/app/service/collection.service';
-import { CreateCollectionData } from 'src/app/service/types';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
+import { CollectionData } from 'src/app/service/types';
+import { HTTP_STATUS_CODE, REQUEST_CODE_TEMPLATE } from 'src/app/constants/application';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
+import * as cuid from 'cuid';
 
 @Component({
   selector: 'app-create-collection',
@@ -42,20 +43,26 @@ export class CreateCollectionComponent implements OnInit {
       return false;
     }
 
-    const collectionData: CreateCollectionData = {
+    const collectionData: CollectionData = {
+      id: cuid(),
       name: this.formGroup.get('name').value,
       port: Number(this.formGroup.get('port').value),
       prefix: this.formGroup.get('prefix').value,
-      proxyUrl: this.formGroup.get('proxyUrl').value
+      enableProxy: false,
+      proxyUrl: '',
+      headers: [],
+      routes: [],
+      running: false,
+      cors: true,
+      delay: 0,
+      template: REQUEST_CODE_TEMPLATE
     };
     return new Promise((resolve, reject) => {
       this.collectionService
         .createCollection(collectionData)
         .subscribe(ret => {
-          if (ret.statusCode === HTTP_STATUS_CODE.CREATED) {
-            this.messageService.success('created');
-            resolve();
-          }
+          this.messageService.success('created');
+          resolve();
         },
         error => {
           this.modal.close();

@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import * as express from 'express';
 import { RouteService } from './route.service';
 import { CollectionService } from './collection.service';
-import { Route, Collection, IServer, CollectionLocalData } from './types';
+import { Route, Collection, IServer, CollectionData } from './types';
 import { NzMessageService } from 'ng-zorro-antd';
 import { ERRORS } from '../constants/error';
-import { ResponseService } from './response.service';
 import { Subject } from 'rxjs';
 import * as expressCore from 'express-serve-static-core';
 import { CORSHeaders } from '../constants/http';
+import * as proxy from 'http-proxy-middleware';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,6 @@ export class ServerService {
   constructor(
     private collectionService: CollectionService,
     private routeService: RouteService,
-    private responseService: ResponseService,
     private messageService: NzMessageService
   ) {}
 
@@ -28,7 +27,7 @@ export class ServerService {
     const app = express();
     const collection = this.collectionService.getCollectionById(collectionId);
     return new Promise((resolve, reject) => {
-      this.collectionService.getCollectionLocalData(collectionId).then(collectionData => {
+      this.collectionService.getCollectionData(collectionId).subscribe(collectionData => {
         const server = app.listen(collection.port, () => {
           console.log(`collection ${collection.name} is started!`);
           resolve();
@@ -48,6 +47,7 @@ export class ServerService {
         this.setPreFlightOption(app, collectionData);
         this.routeService.getRoutes(collectionId).subscribe(routes => {
           this.setRoutes(app, collection, routes);
+          this.setProxy(app, collection);
         });
       });
     });
@@ -66,32 +66,29 @@ export class ServerService {
 
   setRoutes(app: expressCore.Express, collection: Collection, routes: Route[]) {
     routes.forEach(route => {
+      const path = collection.prefix ? `/${collection.prefix}/${route.path}` : `/${route.path}`;
       app[route.method](
-        `/${collection.prefix}/${route.path}`,
+        path,
         (req: expressCore.Request, res: expressCore.Response) => {
           this.routeService.getActivatedResponse(route.id).then(response => {
-            this.collectionService
-              .getCollectionLocalData(collection.id)
-              .then(data => {
-                if (data.cors) {
-                  this.setCorsHeaders(res);
-                }
-                if (data.headers.length) {
-                  this.setHeaders(res, data.headers);
-                }
-                if (response) {
-                  res.send(response.body);
-                } else {
-                  res.send(404);
-                }
-              });
+            if (collection.cors) {
+              this.setCorsHeaders(res);
+            }
+            if (collection.headers.length) {
+              this.setHeaders(res, collection.headers);
+            }
+            if (response) {
+              res.send(response.body);
+            } else {
+              res.send(404);
+            }
           });
         }
       );
     });
   }
 
-  setPreFlightOption(app: expressCore.Express, collection: CollectionLocalData) {
+  setPreFlightOption(app: expressCore.Express, collection: CollectionData) {
     app.options('/*', (req, res) => {
       this.setHeaders(res, CORSHeaders);
       this.setHeaders(res, collection.headers);
@@ -119,5 +116,17 @@ export class ServerService {
 
   getServer(collectionId) {
     return this.servers.get(collectionId);
+  }
+
+  setProxy(app: expressCore.Application, collection: Collection) {
+    if (collection.enableProxy && collection.proxyUrl) {
+      const options = {
+        target: collection.proxyUrl,
+        changeOrigin: true, // needed for virtual hosted sites
+        ws: true,
+      };
+      const proxyInstance = proxy(options);
+      app.use('*', proxyInstance);
+    }
   }
 }

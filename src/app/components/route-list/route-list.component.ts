@@ -34,18 +34,20 @@ export class RouteListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const subCollectionId = this.collectionService.activeCollectionId$.subscribe(
+    const collectionIdSubscription = this.collectionService.activeCollectionId$.subscribe(
       collectionId => {
         this.collectionId = collectionId;
-        this.getRoutes();
+        if (collectionId) {
+          this.getRoutes();
+        }
       }
     );
-    const subscribeUpdateLocalRouteData = this.routeService.updateRouteListData$.subscribe(
+    const updateLocalRouteDataSubscription = this.routeService.updateRouteListData$.subscribe(
       data => {
         this.updateRouteData(data);
       }
     );
-    this.subscriptions.push(subCollectionId, subscribeUpdateLocalRouteData);
+    this.subscriptions.push(collectionIdSubscription, updateLocalRouteDataSubscription);
   }
 
   ngOnDestroy() {
@@ -69,7 +71,7 @@ export class RouteListComponent implements OnInit, OnDestroy {
     this.routeService.setActiveRoute(routeId);
   }
 
-  openCreateModal() {
+  openCreateModal(event) {
     this.modalService.create({
       nzTitle: 'New Route',
       nzContent: CreateRouteComponent,
@@ -95,11 +97,9 @@ export class RouteListComponent implements OnInit, OnDestroy {
       nzTitle: 'Remove Route',
       nzContent: `Are you sure you want to remove "${routeName}"`,
       nzOnOk: () => {
-        this.routeService.removeRoute(routeId).subscribe(ret => {
-          if (ret.statusCode === HTTP_STATUS_CODE.OK) {
-            this.messageService.success('removed!');
-            this.getRoutes();
-          }
+        this.routeService.removeRoute(routeId).subscribe(_ => {
+          this.messageService.success('removed!');
+          this.getRoutes();
         });
       }
     });
