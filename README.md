@@ -1,8 +1,7 @@
 <p align="center"><img src="./docs/assets/logo-readme.png" ></p>
-
-<h3 align="center">
+<h1 align="center">
     Mockingbird
-</h3>
+</h1>
 
 Mockingbird can help you to manage mock servers easily, It can generate typescript interfaces and request code automatically; 
 
