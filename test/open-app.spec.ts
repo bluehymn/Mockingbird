@@ -1,5 +1,4 @@
 import { Tester } from './helper/tester';
-import { async } from '@angular/core/testing';
 
 describe('Open app', () => {
   const tester = new Tester();
@@ -17,7 +16,7 @@ describe('Open app', () => {
     await tester.spectron.client
       .elements('app-collection-list .collections li')
       .should.eventually.have.property('value')
-      .to.be.an('Array')
+      .to.be.a('Array')
       .that.have.lengthOf(2);
   });
 
@@ -25,7 +24,7 @@ describe('Open app', () => {
     await tester.spectron.client
       .elements('app-route-list .routes li')
       .should.eventually.have.property('value')
-      .to.be.an('Array')
+      .to.be.a('Array')
       .that.have.lengthOf(2);
   });
 

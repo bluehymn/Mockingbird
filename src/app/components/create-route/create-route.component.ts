@@ -4,12 +4,10 @@ import { RouteService } from 'src/app/service/route.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { RouteData } from 'src/app/service/types';
 import { catchError } from 'rxjs/operators';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { EmptyError, of } from 'rxjs';
 import { HTTP_METHODS } from 'src/app/constants/http';
 import { HttpMethod } from 'src/app/types/http.types';
 import * as _ from 'lodash';
-import { allSettled } from 'q';
 import * as cuid from 'cuid';
 import { ServerService } from 'src/app/service/server.service';
 @Component({
