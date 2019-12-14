@@ -15,7 +15,7 @@ import * as proxy from 'http-proxy-middleware';
 })
 export class ServerService {
   servers = new Map<string, IServer>();
-  // route变化时需要重启server更新配置 订阅collectionId
+  //  Need to restart server for refresh configurations when route change(subscribe the collectionId)
   serverNeedRestart$ = new Subject<string>();
   constructor(
     private collectionService: CollectionService,

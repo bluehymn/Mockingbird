@@ -21,7 +21,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       tap(
         () => {},
         error => {
-          // TODO: 处理特殊异常
+          // TODO: Handling special exceptions
           let errorMessage = '';
           if (error.error instanceof ErrorEvent) {
             // client-side error

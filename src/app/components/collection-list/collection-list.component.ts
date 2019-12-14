@@ -3,8 +3,6 @@ import { CollectionService } from 'src/app/service/collection.service';
 import { Collection } from 'src/app/service/types';
 import { NzModalService, NzMessageService } from 'ng-zorro-antd';
 import { CreateCollectionComponent } from '../create-collection/create-collection.component';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
-import { StoreService } from 'src/app/service/store.service';
 import { IndexedDBService } from 'src/app/service/indexedDB.service';
 
 @Component({
