@@ -26,7 +26,6 @@ export interface CollectionData {
   enableProxy: boolean;
   proxyUrl: string;
   headers: { key: string; value: string }[];
-  routes: Route[];
   running: boolean;
   cors: boolean;
   delay: number;

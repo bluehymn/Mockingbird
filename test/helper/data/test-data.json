@@ -1,0 +1,71 @@
+{
+  "collections": [
+    {
+      "id": "1",
+      "name": "collection1",
+      "port": 8000,
+      "prefix": "api",
+      "enableProxy": false,
+      "proxyUrl": "",
+      "headers": [],
+      "running": false,
+      "cors": true,
+      "delay": 0,
+      "template": "this.httpClient.{{METHOD}}<ResponseType<DataType>>('@host/{{PATH}}', {}).subscribe(ret => {});"
+    },
+    {
+      "id": "2",
+      "name": "collection2",
+      "port": 8100,
+      "prefix": "api",
+      "enableProxy": false,
+      "proxyUrl": "",
+      "headers": [],
+      "running": false,
+      "cors": true,
+      "delay": 0,
+      "template": "this.httpClient.{{METHOD}}<ResponseType<DataType>>('@host/{{PATH}}', {}).subscribe(ret => {});"
+    }
+  ],
+  "routes": [
+    {
+      "id": "1",
+      "collectionId": "1",
+      "name": "route1",
+      "path": "/animals",
+      "method": "get",
+      "description": "find all animals",
+      "ignore": false,
+      "activatedResponseId": null
+    },
+    {
+      "id": "2",
+      "collectionId": "1",
+      "name": "route2",
+      "path": "/cats",
+      "method": "get",
+      "description": "find all cats",
+      "ignore": false,
+      "activatedResponseId": null
+    }
+  ],
+  "responses": [
+    {
+      "id": "1",
+      "routeId": "1",
+      "body": "[{\"name\"：\"Tiger\"}]",
+      "name": "OK",
+      "statusCode": 200,
+      "headers": []
+    },
+    {
+      "id": "2",
+      "routeId": "2",
+      "body": "[{\"name\"：\"Lion\"}]",
+      "name": "OK",
+      "statusCode": 200,
+      "headers": []
+    }
+  ]
+}
+

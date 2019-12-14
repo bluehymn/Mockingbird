@@ -1,6 +1,6 @@
 <form [formGroup]="formGroup">
   <div class="form-item">
-    <input nz-input placeholder="Collection Name" formControlName="name" />
+    <input id="create-collection-name-input" nz-input placeholder="Collection Name" formControlName="name" />
   </div>
   <nz-alert
     nzType="error"
@@ -9,7 +9,7 @@
     *ngIf="formGroup.get('name').invalid && formGroup.get('name').dirty"
   ></nz-alert>
   <div class="form-item">
-    <input nz-input placeholder="Port" formControlName="port" />
+    <input id="create-collection-port-input" nz-input placeholder="Port" formControlName="port" />
   </div>
   <nz-alert
     nzType="error"
@@ -19,6 +19,7 @@
   ></nz-alert>
   <div class="form-item">
     <input
+      id="create-collection-prefix-input"
       nz-input
       placeholder="Prefix(example: localhost/prefix/xxxx)"
       formControlName="prefix"
@@ -26,6 +27,7 @@
   </div>
   <div class="form-item">
     <input
+      id="create-collection-proxy-url-input"
       nz-input
       placeholder="ProxyUrl(Host for request that not matched route)"
       formControlName="proxyUrl"
