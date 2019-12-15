@@ -3,7 +3,6 @@ import { ResponseService } from 'src/app/service/response.service';
 import { NzMessageService, NzModalRef, valueFunctionProp } from 'ng-zorro-antd';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ResponseData } from 'src/app/service/types';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { HTTP_STATUS_CODES } from 'src/app/constants/http';
 import * as cuid from 'cuid';
 

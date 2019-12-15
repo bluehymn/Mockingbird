@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StatusbarService } from 'src/app/service/statusbar.service';
+const appVersion = require('../../../../package.json').version;
 
 @Component({
   selector: 'app-statusbar',
@@ -9,6 +10,7 @@ import { StatusbarService } from 'src/app/service/statusbar.service';
 export class StatusbarComponent implements OnInit {
   syncing = false;
   delayTimer;
+  appVersion = appVersion;
   constructor(private statusbarService: StatusbarService) {}
 
   ngOnInit() {
