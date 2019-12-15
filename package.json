@@ -7,16 +7,12 @@
     "serve:app": "ng build --configuration=development --sourceMap=true --watch --output-hashing=all",
     "serve:electron": "concurrently \"npm run compile-electron-main\" \"wait-on -d 2000 ./dist/electron-main.js && electron ./dist/electron-main.js --serve --remote-debugging-port=9222\"",
     "compile-electron-main": "tsc ./src/electron/electron-main.ts --Outdir ./dist",
-    "build:prod": "ng build --prod --configuration=production && npm run compile-electron-main && cp ./src/electron/package.json ./dist",
-    "build-win:prod": "ng build --prod --configuration=production && npm run compile-electron-main && copy .\\src\\electron\\package.json .\\dist",
+    "build:prod": "ng build --prod --configuration=production && npm run compile-electron-main",
     "clean-packages": "rm -rf ./packages",
     "clean-packages-win": "del /s /q .\\packages",
-    "package:win": "npm run clean-packages && electron-builder --win --config electron-builder.json",
+    "package:win": "npm run clean-packages-win && electron-builder --win --config electron-builder.json",
     "package:linux": "npm run clean-packages && electron-builder --linux --config electron-builder.json",
-    "package:mac": "npm run clean-packages && electron-builder --mac --config electron-builder.json",
-    "package-win:win": "npm run clean-packages-win && electron-builder --win --config electron-builder.json",
-    "package-win:linux": "npm run clean-packages-win && electron-builder --linux --config electron-builder.json",
-    "package-win:mac": "npm run clean-packages-win && electron-builder --mac --config electron-builder.json"
+    "package:mac": "npm run clean-packages && electron-builder --mac --config electron-builder.json"
   },
   "private": true,
   "dependencies": {
