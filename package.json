@@ -1,13 +1,13 @@
 {
   "name": "mockingbird",
-  "version": "0.1.0",
+  "version": "0.1.0-beta",
   "scripts": {
     "test": "ts-mocha -p test/tsconfig.spec.json --timeout 20000 test/**/*.spec.ts",
     "serve": "concurrently \"npm run serve:app\" \"wait-on -d 10000 ./dist && npm run serve:electron\"",
     "serve:app": "ng build --configuration=development --sourceMap=true --watch --output-hashing=all",
     "serve:electron": "concurrently \"npm run compile-electron-main\" \"wait-on -d 2000 ./dist/electron-main.js && electron ./dist/electron-main.js --serve --remote-debugging-port=9222\"",
     "compile-electron-main": "tsc ./src/electron/electron-main.ts --Outdir ./dist",
-    "build:prod": "ng build --prod --configuration=production && npm run compile-electron-main",
+    "build:prod": "ng build --prod --configuration=production && npm run compile-electron-main && cp ./src/electron/package.json ./dist",
     "build-win:prod": "ng build --prod --configuration=production && npm run compile-electron-main && copy .\\src\\electron\\package.json .\\dist",
     "clean-packages": "rm -rf ./packages",
     "clean-packages-win": "del /s /q .\\packages",

@@ -10,6 +10,8 @@ function createWindow() {
     height: 768,
     minWidth: 1280,
     minHeight: 768,
+    title: `Mockingbird`,
+    icon: path.join(__dirname, '/icon_512x512x32.png'),
     webPreferences: { nodeIntegration: true }
   });
 
