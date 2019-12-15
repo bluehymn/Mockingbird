@@ -1,9 +1,9 @@
 {
   "name": "mockingbird",
   "description": "Mockingbird can help you to manage mock servers easily, It can generate typescript interfaces and request code automatically.",
-  "version": "0.1.0",
+  "version": "0.1.0-beta",
   "author": {
-    "name": "Wu jing",
+    "name": "Wu Jing",
     "email": "bluehymn@qq.com"
   },
   "license": "MIT",

@@ -51,7 +51,9 @@ export class ResponseTypesComponent implements OnInit, OnDestroy {
       this.initEditor();
     });
     const subscribeResize = fromEvent(window, 'resize').subscribe(() => {
-      this.editor.layout();
+      if (this.editor) {
+        this.editor.layout();
+      }
     });
 
     this.subscriptions.push(subscribeResize);

@@ -58,7 +58,9 @@ export class ResponseBodyComponent implements OnInit, OnDestroy {
     });
     this.subscribeEditorChange();
     const subscribeResize = fromEvent(window, 'resize').subscribe(() => {
-      this.editor.layout();
+      if (this.editor) {
+        this.editor.layout();
+      }
     });
 
     this.subscriptions.push(subscribeResize);
