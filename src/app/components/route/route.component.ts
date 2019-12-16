@@ -97,7 +97,7 @@ export class RouteComponent implements OnInit {
     });
   }
 
-  setActivatedResponse(responseId) {
+  setActivatedResponse(responseId, callback?) {
     if (responseId) {
       const response = this.responseService
         .getResponse(responseId)
@@ -108,10 +108,14 @@ export class RouteComponent implements OnInit {
           this.updateRoute({
             activatedResponseId: responseId
           });
+          if (callback) {
+            callback();
+          }
         });
     } else {
+      this.route.activatedResponseId = responseId;
       this.activatedResponse = null;
-      this.activatedResponseId = null;
+      this.activatedResponseId = responseId;
       this.responseBody = '';
     }
   }
@@ -183,6 +187,7 @@ export class RouteComponent implements OnInit {
     const queueItemId = this.statusbarService.pushSyncQueue();
     this.routeService.updateRoute(this.route.id, data).subscribe(ret => {
       // this.messageService.success(`${this.name} update successful`);
+      Object.assign(this.route, data);
       this.routeService.updateRouteListData$.next({
         id: this.route.id,
         ...data
@@ -234,6 +239,9 @@ export class RouteComponent implements OnInit {
       nzContent: `Are you sure remove response "${responseName}"`,
       nzOnOk: () => {
         this.responseService.removeResponse(responseId).subscribe(ret => {
+          if (responseId === this.route.activatedResponseId) {
+            this.setActivatedResponse(null);
+          }
           this.getResponse(this.route.id);
         });
       }
