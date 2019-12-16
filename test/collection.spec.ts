@@ -1,8 +1,7 @@
 import { Tester } from './helper/tester';
 import { wait } from './helper/helpers';
-import { async } from '@angular/core/testing';
 
-describe('Collection', async () => {
+describe('Collection Tests', async () => {
   const tester = new Tester();
   tester.runHooks();
   tester.waitForWindowReady();
