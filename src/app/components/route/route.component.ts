@@ -1,9 +1,6 @@
 import {
   Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  OnDestroy
+  OnInit
 } from '@angular/core';
 import { RouteService } from 'src/app/service/route.service';
 import { Route, Response, RouteData } from 'src/app/service/types';
@@ -12,7 +9,6 @@ import { HttpMethod } from 'src/app/types/http.types';
 import { ResponseService } from 'src/app/service/response.service';
 import { Subscription, Subject } from 'rxjs';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { debounceTime } from 'rxjs/operators';
 import { CreateResponseComponent } from '../create-response/create-response.component';
 import { ServerService } from 'src/app/service/server.service';
@@ -90,7 +86,11 @@ export class RouteComponent implements OnInit {
     this.responseService.getResponsesByRouteId(routeId).subscribe(responses => {
       this.responses = responses;
       if (this.responses.length) {
-        this.setActivatedResponse(this.responses[0].id);
+        if (this.route.activatedResponseId) {
+          this.setActivatedResponse(this.route.activatedResponseId);
+        } else {
+          this.setActivatedResponse(this.responses[0].id);
+        }
       } else {
         this.setActivatedResponse(null);
       }
@@ -224,6 +224,18 @@ export class RouteComponent implements OnInit {
         } else {
           return _return;
         }
+      }
+    });
+  }
+
+  removeResponse(responseId, responseName) {
+    this.modalService.confirm({
+      nzTitle: 'Remove Response',
+      nzContent: `Are you sure remove response "${responseName}"`,
+      nzOnOk: () => {
+        this.responseService.removeResponse(responseId).subscribe(ret => {
+          this.getResponse(this.route.id);
+        });
       }
     });
   }

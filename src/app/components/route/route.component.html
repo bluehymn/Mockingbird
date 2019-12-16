@@ -65,24 +65,34 @@
   </div>
 
   <div *ngIf="activatedResponse">
-    <nz-input-group nzCompact class="code-name-group">
-      <nz-select
-        [(ngModel)]="activatedResponse.statusCode"
-        (ngModelChange)="responseChange('statusCode', $event)"
-      >
-        <nz-option
-          *ngFor="let item of statusCodes"
-          [nzValue]="item.code"
-          [nzLabel]="item.code + ' ' + item.text"
-        ></nz-option>
-      </nz-select>
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="activatedResponse.name"
-        (ngModelChange)="responseChange('name', $event)"
-      />
-    </nz-input-group>
+    <div class="code-name-group">
+      <nz-input-group nzCompact>
+        <nz-select
+          [(ngModel)]="activatedResponse.statusCode"
+          (ngModelChange)="responseChange('statusCode', $event)"
+        >
+          <nz-option
+            *ngFor="let item of statusCodes"
+            [nzValue]="item.code"
+            [nzLabel]="item.code + ' ' + item.text"
+          ></nz-option>
+        </nz-select>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="activatedResponse.name"
+          (ngModelChange)="responseChange('name', $event)"
+        />
+      </nz-input-group>
+      <i
+        nz-icon
+        class="remove"
+        nzType="delete"
+        nzTheme="fill"
+        (click)="removeResponse(activatedResponse.id, activatedResponse.name)"
+        nz-tooltip nzTooltipTitle="Remove response"
+      ></i>
+    </div>
 
     <nz-tabset>
       <nz-tab nzTitle="Body">

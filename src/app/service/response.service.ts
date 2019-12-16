@@ -32,4 +32,8 @@ export class ResponseService {
   updateResponse(responseId: string, newValues: Partial<Response>) {
     return this.dbService.update('response', responseId, newValues);
   }
+
+  removeResponse(responseId: string) {
+    return this.dbService.delete('response', responseId);
+  }
 }
