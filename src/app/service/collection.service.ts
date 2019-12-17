@@ -33,10 +33,6 @@ export class CollectionService {
     );
   }
 
-  getCollectionById(collectionId) {
-    return this.collections.find(collection => collection.id === collectionId);
-  }
-
   updateCollection(collectionId, newValues: Partial<CollectionData>) {
     return this.dbService.update('collection', collectionId, newValues);
   }
@@ -45,7 +41,7 @@ export class CollectionService {
     return this.dbService.delete('collection', collectionId);
   }
 
-  getCollectionData(collectionId) {
+  getCollection(collectionId) {
     return this.dbService.get<CollectionData>('collection', collectionId);
   }
 }

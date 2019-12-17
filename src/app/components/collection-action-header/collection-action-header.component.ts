@@ -26,30 +26,28 @@ export class CollectionActionHeaderComponent implements OnInit {
   constructor(
     private serverService: ServerService,
     private collectionService: CollectionService,
-    private messageService: NzMessageService,
     private modalService: NzModalService,
     private statusbarService: StatusbarService
   ) {}
 
   ngOnInit() {
     this.collectionService.activeCollectionId$.subscribe(collectionId => {
-      const collection = this.collectionService.collections.find(
-        _collection => _collection.id === collectionId
-      );
-      if (collection) {
-        this.collection = collection;
-        this.port = collection.port;
-        this.prefix = collection.prefix;
-        this.name = collection.name;
-        this.collectionIsRunning = collection && collection.running;
-        if (this.serverService.getServer(collectionId)) {
-          this.needRestart = this.serverService.getServer(collectionId).haveUpdates;
+      this.collectionService.getCollection(collectionId).subscribe(collection => {
+        if (collection) {
+          this.collection = collection;
+          this.port = collection.port;
+          this.prefix = collection.prefix;
+          this.name = collection.name;
+          this.collectionIsRunning = collection.running;
+          if (this.serverService.getServer(collectionId)) {
+            this.needRestart = this.serverService.getServer(collectionId).haveUpdates;
+          } else {
+            this.needRestart = false;
+          }
         } else {
           this.needRestart = false;
         }
-      } else {
-        this.needRestart = false;
-      }
+      });
     });
 
     this.collectionChange$.pipe(debounceTime(500)).subscribe(data => {
@@ -70,7 +68,7 @@ export class CollectionActionHeaderComponent implements OnInit {
         this.collectionIsRunning = true;
         this.collectionService.updateCollection(this.collection.id, {
           running: true
-        });
+        }).subscribe();
       })
       .catch(e => {
         console.error(e);
@@ -82,7 +80,7 @@ export class CollectionActionHeaderComponent implements OnInit {
       this.collectionIsRunning = false;
       this.collectionService.updateCollection(this.collection.id, {
         running: false
-      });
+      }).subscribe();
       return true;
     });
   }
