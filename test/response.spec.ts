@@ -13,19 +13,8 @@ describe('Response Tests', async function() {
       .element('.ant-modal-title div')
       .getHTML(false)
       .should.eventually.equal('New Response');
-  });
-
-  wait(1000);
-
-  it('Create new response', async () => {
     await tester.spectron.client
       .element('.ant-modal-footer .ant-btn-primary')
-      .click();
-
-    wait(1000);
-
-    await tester.spectron.client
-      .element('.response-selector .ant-select-selection')
       .click();
   });
 });
