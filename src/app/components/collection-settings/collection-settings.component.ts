@@ -33,7 +33,7 @@ export class CollectionSettingsComponent implements OnInit {
 
   getCollectionLocalData() {
     this.collectionService
-      .getCollectionData(this.collectionId)
+      .getCollection(this.collectionId)
       .subscribe(data => {
         if (data) {
           this.enableCors = data.cors;

@@ -25,29 +25,30 @@ export class ServerService {
 
   start(collectionId) {
     const app = express();
-    const collection = this.collectionService.getCollectionById(collectionId);
     return new Promise((resolve, reject) => {
-      this.collectionService.getCollectionData(collectionId).subscribe(collectionData => {
-        const server = app.listen(collection.port, () => {
-          console.log(`collection ${collection.name} is started!`);
-          resolve();
-        });
-        server.on('error', (error: any) => {
-          if (error.code === 'EADDRINUSE') {
-            this.messageService.error(ERRORS.PORT_ALREADY_USED);
-          } else if (error.code === 'EACCES') {
-            this.messageService.error(ERRORS.INVALID_PORT);
-          }
-          reject(error);
-        });
-        this.servers.set(collectionId, {
-          server,
-          haveUpdates: false
-        });
-        this.setPreFlightOption(app, collectionData);
-        this.routeService.getRoutes(collectionId).subscribe(routes => {
-          this.setRoutes(app, collection, routes);
-          this.setProxy(app, collection);
+      this.collectionService.getCollection(collectionId).subscribe(collection => {
+        this.collectionService.getCollection(collectionId).subscribe(collectionData => {
+          const server = app.listen(collection.port, () => {
+            console.log(`collection ${collection.name} is started!`);
+            resolve();
+          });
+          server.on('error', (error: any) => {
+            if (error.code === 'EADDRINUSE') {
+              this.messageService.error(ERRORS.PORT_ALREADY_USED);
+            } else if (error.code === 'EACCES') {
+              this.messageService.error(ERRORS.INVALID_PORT);
+            }
+            reject(error);
+          });
+          this.servers.set(collectionId, {
+            server,
+            haveUpdates: false
+          });
+          this.setPreFlightOption(app, collectionData);
+          this.routeService.getRoutes(collectionId).subscribe(routes => {
+            this.setRoutes(app, collection, routes);
+            this.setProxy(app, collection);
+          });
         });
       });
     });
