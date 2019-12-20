@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ServerService } from 'src/app/service/server.service';
 import { CollectionService } from 'src/app/service/collection.service';
 import { Collection } from 'src/app/service/types';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { NzModalService } from 'ng-zorro-antd';
 import { CollectionSettingsComponent } from '../collection-settings/collection-settings.component';
 import { StatusbarService } from 'src/app/service/statusbar.service';
 
@@ -38,7 +37,7 @@ export class CollectionActionHeaderComponent implements OnInit {
           this.port = collection.port;
           this.prefix = collection.prefix;
           this.name = collection.name;
-          this.collectionIsRunning = collection.running;
+          this.collectionIsRunning = !!this.serverService.getServer(collectionId);
           if (this.serverService.getServer(collectionId)) {
             this.needRestart = this.serverService.getServer(collectionId).haveUpdates;
           } else {
@@ -66,9 +65,6 @@ export class CollectionActionHeaderComponent implements OnInit {
       .start(this.collection.id)
       .then(() => {
         this.collectionIsRunning = true;
-        this.collectionService.updateCollection(this.collection.id, {
-          running: true
-        }).subscribe();
       })
       .catch(e => {
         console.error(e);
@@ -78,9 +74,6 @@ export class CollectionActionHeaderComponent implements OnInit {
   stop() {
     return this.serverService.stop(this.collection.id).then(() => {
       this.collectionIsRunning = false;
-      this.collectionService.updateCollection(this.collection.id, {
-        running: false
-      }).subscribe();
       return true;
     });
   }

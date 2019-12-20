@@ -187,7 +187,7 @@ export class RouteComponent implements OnInit {
     const queueItemId = this.statusbarService.pushSyncQueue();
     this.routeService.updateRoute(this.route.id, data).subscribe(ret => {
       // this.messageService.success(`${this.name} update successful`);
-      Object.assign(this.route, data);
+      this.route = Object.assign({}, this.route, data);
       this.routeService.updateRouteListData$.next({
         id: this.route.id,
         ...data

@@ -42,7 +42,8 @@ export class ServerService {
           });
           this.servers.set(collectionId, {
             server,
-            haveUpdates: false
+            haveUpdates: false,
+            running: true
           });
           this.setPreFlightOption(app, collectionData);
           this.routeService.getRoutes(collectionId).subscribe(routes => {

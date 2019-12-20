@@ -26,7 +26,6 @@ export interface CollectionData {
   enableProxy: boolean;
   proxyUrl: string;
   headers: { key: string; value: string }[];
-  running: boolean;
   cors: boolean;
   delay: number;
   template: string;
@@ -72,5 +71,6 @@ export interface IHttpHeader {
 
 export interface IServer {
   server: Server;
+  running: boolean;
   haveUpdates: boolean;
 }

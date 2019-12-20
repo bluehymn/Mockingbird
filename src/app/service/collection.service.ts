@@ -13,7 +13,7 @@ import { IndexedDBService } from './indexedDB.service';
   providedIn: 'root'
 })
 export class CollectionService {
-  activeCollectionId$ = new BehaviorSubject<string>(null);
+  activeCollectionId$ = new Subject<string>();
   collections: Collection[] = [];
   updateCollectionListData$ = new Subject<Partial<Collection>>();
   constructor(
