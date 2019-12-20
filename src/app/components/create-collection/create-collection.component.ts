@@ -51,7 +51,6 @@ export class CreateCollectionComponent implements OnInit {
       enableProxy: false,
       proxyUrl: '',
       headers: [],
-      running: false,
       cors: true,
       delay: 0,
       template: REQUEST_CODE_TEMPLATE
