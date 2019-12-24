@@ -24,5 +24,24 @@
   },
   "dmg": {
     "sign": false
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage"
+      },
+      {
+        "target": "snap"
+      },
+      {
+        "target": "deb"
+      },
+      {
+        "target": "rpm"
+      }
+    ],
+    "category": "Development",
+    "icon": "build",
+    "artifactName": "mockoon-${version}.${ext}"
   }
 }
