@@ -55,7 +55,7 @@ export class CollectionActionHeaderComponent implements OnInit {
 
     this.serverService.serverNeedRestart$.subscribe(collectionId => {
       if (collectionId && collectionId === this.collection.id) {
-        this.needRestart = true;
+        this.needRestart = this.collectionIsRunning;
       }
     });
   }
