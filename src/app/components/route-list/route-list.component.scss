@@ -13,11 +13,38 @@
 }
 
 .routes-wrapper {
+  position: relative;
+  height: 100%;
   background-color: $gray-1;
   width: 240px;
 }
 
 .routes {
+  position: absolute;
+  height: calc(100vh - 128px);
+  overflow: auto;
+  width: 100%;
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-button {
+    /* 2 */
+  }
+  &::-webkit-scrollbar-track {
+    /* 3 */
+  }
+  &::-webkit-scrollbar-track-piece {
+    /* 4 */
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.1);
+  }
+  &::-webkit-scrollbar-corner {
+    /* 6 */
+  }
+  &::-webkit-resizer {
+    /* 7 */
+  }
   li {
     display: flex;
     justify-content: space-between;
@@ -34,10 +61,14 @@
   }
   .name {
     color: $gray-9;
+    width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .path {
     font-size: 12px;
-    nz-tag{
+    nz-tag {
       display: inline-block;
       padding: 0 5px;
       line-height: 16px;

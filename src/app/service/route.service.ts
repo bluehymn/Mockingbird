@@ -15,6 +15,7 @@ import { ResponseService } from './response.service';
 export class RouteService {
   activatedRouteId$ = new BehaviorSubject<string>(null);
   updateRouteListData$ = new Subject<Partial<Route>>();
+  needReloadList$ = new Subject<string>();
   constructor(private dbService: IndexedDBService, private responseService: ResponseService) {}
 
   createRoute(data: RouteData) {

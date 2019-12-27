@@ -47,7 +47,13 @@ export class RouteListComponent implements OnInit, OnDestroy {
         this.updateRouteData(data);
       }
     );
-    this.subscriptions.push(collectionIdSubscription, updateLocalRouteDataSubscription);
+
+    const needReloadListSubscription = this.routeService.needReloadList$.subscribe(collectionId => {
+      if (this.collectionId === collectionId) {
+        this.getRoutes();
+      }
+    })
+    this.subscriptions.push(collectionIdSubscription, updateLocalRouteDataSubscription, needReloadListSubscription);
   }
 
   ngOnDestroy() {

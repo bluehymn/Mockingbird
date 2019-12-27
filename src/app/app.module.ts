@@ -16,14 +16,17 @@ import {
   PlayCircleFill,
   DeleteOutline,
   DeleteFill,
-  SettingOutline
+  SettingOutline,
+  ClockCircleOutline
 } from '@ant-design/icons-angular/icons';
+
 const icons: IconDefinition[] = [
   PlusOutline,
   PlayCircleFill,
   DeleteOutline,
   DeleteFill,
-  SettingOutline
+  SettingOutline,
+  ClockCircleOutline
 ];
 
 /** 配置 angular i18n **/
