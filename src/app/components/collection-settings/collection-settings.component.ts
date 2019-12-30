@@ -9,9 +9,11 @@ import { OpenAPIV3 } from 'openapi-types';
 import { RouteService } from 'src/app/service/route.service';
 import * as cuid from 'cuid';
 import { HttpMethod } from 'src/app/types/http.types';
-import { NzMessageService, timeUnits } from 'ng-zorro-antd';
+import { NzMessageService, timeUnits, id_ID } from 'ng-zorro-antd';
 import { catchError } from 'rxjs/operators';
 import { EmptyError } from 'rxjs';
+import { ResponseService } from 'src/app/service/response.service';
+import * as jsf from 'json-schema-faker';
 
 @Component({
   selector: 'app-collection-settings',
@@ -39,8 +41,8 @@ export class CollectionSettingsComponent implements OnInit {
   constructor(
     private collectionService: CollectionService,
     private serverService: ServerService,
-    private httpClient: HttpClient,
     private routeService: RouteService,
+    private responseService: ResponseService,
     private messageService: NzMessageService
   ) {}
 
@@ -133,7 +135,7 @@ export class CollectionSettingsComponent implements OnInit {
           if (path) {
             const pathObjects = api.paths[path] as OpenAPIV3.PathItemObject;
             for (const operationMethod in pathObjects) {
-              if (operationMethod) {
+              if (pathObjects.hasOwnProperty(operationMethod)) {
                 const operationObject = pathObjects[
                   operationMethod
                 ] as OpenAPIV3.OperationObject;
@@ -154,18 +156,22 @@ export class CollectionSettingsComponent implements OnInit {
     pathObject: OpenAPIV3.OperationObject
   ) {
     const name = pathObject.summary;
-    const description = pathObject.description;
+    const routeDescription = pathObject.description;
+
     if (path[0] === '/') {
       path = path.slice(1);
     }
+    // transform the route parameters to express formate
+    path = path.replace(/\{([^{}]+)\}/g, ':$1');
+    const uid = cuid();
     this.routeService
       .createRoute({
-        id: cuid(),
+        id: uid,
         collectionId: this.collectionId,
         name,
         path,
         method: <HttpMethod>method,
-        description,
+        description: routeDescription,
         ignore: false,
         activatedResponseId: null
       })
@@ -177,13 +183,38 @@ export class CollectionSettingsComponent implements OnInit {
       )
       .subscribe(ret => {
         this.importedRouteNumber++;
-        if (this.importRouteNumber === this.importedRouteNumber  + this.importFailedNumber) {
+        if (
+          this.importRouteNumber ===
+          this.importedRouteNumber + this.importFailedNumber
+        ) {
           this.isImporting = false;
           this.messageService.success(
             `Imported ${this.importedRouteNumber} routes, ${this.importFailedNumber} failed.`
           );
           this.routeService.needReloadList$.next(this.collectionId);
         }
+        for (const code in pathObject.responses) {
+          if (pathObject.responses.hasOwnProperty(code)) {
+            const schema = pathObject.responses[code]['schema'];
+            const responseDescription = pathObject.responses[code]['description'];
+            let responseBody = {};
+            if (schema) {
+              responseBody = jsf.generate(schema);
+            }
+            this.addResponse(code, uid, responseBody, responseDescription);
+          }
+        }
       });
+  }
+
+  addResponse(code: string, uid: string, responseBody: any, description: string) {
+    this.responseService.createResponse({
+      id: cuid(),
+      routeId: uid,
+      body: JSON.stringify(responseBody),
+      name: description,
+      statusCode: Number(code),
+      headers: []
+    }).subscribe();
   }
 }
