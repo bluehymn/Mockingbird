@@ -1,12 +1,19 @@
-import {
-  Component,
-  OnInit,
-  Input
-} from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { IHttpHeader } from 'src/app/service/types';
 import { HEADER_KEYS, HEADER_VALUES } from 'src/app/constants/http';
 import { CollectionService } from 'src/app/service/collection.service';
 import { ServerService } from 'src/app/service/server.service';
+import { HttpClient } from '@angular/common/http';
+import * as SwaggerParser from 'swagger-parser';
+import { OpenAPIV3 } from 'openapi-types';
+import { RouteService } from 'src/app/service/route.service';
+import * as cuid from 'cuid';
+import { HttpMethod } from 'src/app/types/http.types';
+import { NzMessageService, timeUnits, id_ID } from 'ng-zorro-antd';
+import { catchError } from 'rxjs/operators';
+import { EmptyError } from 'rxjs';
+import { ResponseService } from 'src/app/service/response.service';
+import * as jsf from 'json-schema-faker';
 
 @Component({
   selector: 'app-collection-settings',
@@ -19,36 +26,46 @@ export class CollectionSettingsComponent implements OnInit {
   enableCors = false;
   enableProxy = false;
   proxyUrl = '';
+  swaggerUrl = '';
   headers: (IHttpHeader & {
     uuid: string;
     keyOptions: any[];
     valueOptions: any[];
   })[] = [];
   suggestionOptions = [];
-  constructor(private collectionService: CollectionService, private serverService: ServerService) {}
+  isImporting = false;
+  importRouteNumber = 0;
+  importedRouteNumber = 0;
+  importFailedNumber = 0;
+
+  constructor(
+    private collectionService: CollectionService,
+    private serverService: ServerService,
+    private routeService: RouteService,
+    private responseService: ResponseService,
+    private messageService: NzMessageService
+  ) {}
 
   ngOnInit() {
     this.getCollectionLocalData();
   }
 
   getCollectionLocalData() {
-    this.collectionService
-      .getCollection(this.collectionId)
-      .subscribe(data => {
-        if (data) {
-          this.enableCors = data.cors;
-          this.proxyUrl = data.proxyUrl;
-          this.enableProxy = data.enableProxy;
-          if (data.headers && data.headers.length) {
-            this.headers = data.headers.map(item => ({
-              uuid: (new Date().getTime() + Math.random() * 10000).toString(),
-              keyOptions: [],
-              valueOptions: [],
-              ...item
-            }));
-          }
+    this.collectionService.getCollection(this.collectionId).subscribe(data => {
+      if (data) {
+        this.enableCors = data.cors;
+        this.proxyUrl = data.proxyUrl;
+        this.enableProxy = data.enableProxy;
+        if (data.headers && data.headers.length) {
+          this.headers = data.headers.map(item => ({
+            uuid: (new Date().getTime() + Math.random() * 10000).toString(),
+            keyOptions: [],
+            valueOptions: [],
+            ...item
+          }));
         }
-      });
+      }
+    });
   }
 
   corsChange(enable) {}
@@ -87,17 +104,117 @@ export class CollectionSettingsComponent implements OnInit {
   }
 
   updateCollection() {
-    this.collectionService.updateCollection(this.collectionId, {
-      cors: this.enableCors,
-      enableProxy: this.enableProxy,
-      proxyUrl: this.proxyUrl,
-      headers: this.headers.map(item => ({
-        key: item.key,
-        value: item.value
-      }))
-    }).subscribe(ret => {
-      this.collectionService.updateCollectionListData$.next(null);
-      this.serverService.serverNeedRestart$.next(this.collectionId);
+    this.collectionService
+      .updateCollection(this.collectionId, {
+        cors: this.enableCors,
+        enableProxy: this.enableProxy,
+        proxyUrl: this.proxyUrl,
+        headers: this.headers.map(item => ({
+          key: item.key,
+          value: item.value
+        }))
+      })
+      .subscribe(ret => {
+        this.collectionService.updateCollectionListData$.next(null);
+        this.serverService.serverNeedRestart$.next(this.collectionId);
+      });
+  }
+
+  importRoutes() {
+    this.isImporting = true;
+    SwaggerParser.validate(this.swaggerUrl, (err, api) => {
+      if (err) {
+        // console.error(err);
+        this.messageService.error('Import failed');
+        this.isImporting = false;
+      } else {
+        this.importRouteNumber = 0;
+        this.importedRouteNumber = 0;
+        this.importFailedNumber = 0;
+        for (const path in api.paths) {
+          if (path) {
+            const pathObjects = api.paths[path] as OpenAPIV3.PathItemObject;
+            for (const operationMethod in pathObjects) {
+              if (pathObjects.hasOwnProperty(operationMethod)) {
+                const operationObject = pathObjects[
+                  operationMethod
+                ] as OpenAPIV3.OperationObject;
+                this.addRoute(path, operationMethod, operationObject);
+                this.importRouteNumber++;
+              }
+            }
+          }
+        }
+        this.isImporting = false;
+      }
     });
+  }
+
+  addRoute(
+    path: string,
+    method: string,
+    pathObject: OpenAPIV3.OperationObject
+  ) {
+    const name = pathObject.summary;
+    const routeDescription = pathObject.description;
+
+    if (path[0] === '/') {
+      path = path.slice(1);
+    }
+    // transform the route parameters to express formate
+    path = path.replace(/\{([^{}]+)\}/g, ':$1');
+    const uid = cuid();
+    this.routeService
+      .createRoute({
+        id: uid,
+        collectionId: this.collectionId,
+        name,
+        path,
+        method: <HttpMethod>method,
+        description: routeDescription,
+        ignore: false,
+        activatedResponseId: null
+      })
+      .pipe(
+        catchError(e => {
+          this.importFailedNumber++;
+          return EmptyError;
+        })
+      )
+      .subscribe(ret => {
+        this.importedRouteNumber++;
+        if (
+          this.importRouteNumber ===
+          this.importedRouteNumber + this.importFailedNumber
+        ) {
+          this.isImporting = false;
+          this.messageService.success(
+            `Imported ${this.importedRouteNumber} routes, ${this.importFailedNumber} failed.`
+          );
+          this.routeService.needReloadList$.next(this.collectionId);
+        }
+        for (const code in pathObject.responses) {
+          if (pathObject.responses.hasOwnProperty(code)) {
+            const schema = pathObject.responses[code]['schema'];
+            const responseDescription = pathObject.responses[code]['description'];
+            let responseBody = {};
+            if (schema) {
+              responseBody = jsf.generate(schema);
+            }
+            this.addResponse(code, uid, responseBody, responseDescription);
+          }
+        }
+      });
+  }
+
+  addResponse(code: string, uid: string, responseBody: any, description: string) {
+    this.responseService.createResponse({
+      id: cuid(),
+      routeId: uid,
+      body: JSON.stringify(responseBody),
+      name: description,
+      statusCode: Number(code),
+      headers: []
+    }).subscribe();
   }
 }

@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import { RouteService } from 'src/app/service/route.service';
 import { NzModalService, NzMessageService } from 'ng-zorro-antd';
 import { CreateRouteComponent } from '../create-route/create-route.component';
-import { HTTP_STATUS_CODE } from 'src/app/constants/application';
 
 @Component({
   selector: 'app-route-list',
@@ -39,6 +38,9 @@ export class RouteListComponent implements OnInit, OnDestroy {
         this.collectionId = collectionId;
         if (collectionId) {
           this.getRoutes();
+        } else {
+          this.list = [];
+          this.routeService.setActiveRoute(null);
         }
       }
     );
@@ -47,7 +49,13 @@ export class RouteListComponent implements OnInit, OnDestroy {
         this.updateRouteData(data);
       }
     );
-    this.subscriptions.push(collectionIdSubscription, updateLocalRouteDataSubscription);
+
+    const needReloadListSubscription = this.routeService.needReloadList$.subscribe(collectionId => {
+      if (this.collectionId === collectionId) {
+        this.getRoutes();
+      }
+    });
+    this.subscriptions.push(collectionIdSubscription, updateLocalRouteDataSubscription, needReloadListSubscription);
   }
 
   ngOnDestroy() {

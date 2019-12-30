@@ -15,9 +15,7 @@
 
 <div class="row">
   <span class="title">Enable Proxy: </span
-  ><nz-switch
-    [(ngModel)]="enableProxy"
-  ></nz-switch>
+  ><nz-switch [(ngModel)]="enableProxy"></nz-switch>
 </div>
 <div class="row">
   <input
@@ -26,6 +24,28 @@
     nz-input
     [(ngModel)]="proxyUrl"
   />
+</div>
+
+<div class="section-title">
+  Import from Swagger
+</div>
+
+<div class="row">
+  <input
+    class="swagger-json-url"
+    placeholder="input url of swagger json"
+    nz-input
+    [(ngModel)]="swaggerUrl"
+  />
+  &nbsp;
+  <button
+    nz-button
+    nzType="primary"
+    [nzLoading]="isImporting"
+    (click)="importRoutes()"
+  >
+    Import
+  </button>
 </div>
 
 <div class="section-title">

@@ -77,6 +77,10 @@ export class CollectionListComponent implements OnInit {
       nzOnOk: () => {
         this.collectionService.removeCollection(collectionId).subscribe(ret => {
           this.messageService.success('removed!');
+          if (collectionId === this.activatedCollectionId) {
+            this.activatedCollectionId = null;
+            this.collectionService.activeCollectionId$.next(null);
+          }
           this.getCollections();
         });
       }
