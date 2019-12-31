@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, shell } from 'electron';
+import { app, BrowserWindow, Menu, shell, globalShortcut } from 'electron';
 const path = require('path');
 const url = require('url');
 
@@ -34,14 +34,28 @@ function createWindow() {
   Menu.setApplicationMenu(
     Menu.buildFromTemplate([
       {
-        label: 'About',
+        label: 'Mockingbird',
         submenu: [
           {
             label: 'Github',
             click: function() {
               shell.openExternal('https://github.com/bluehymn/Mockingbird');
             }
+          },
+          {
+            label: 'Quit',
+            accelerator: 'Command+Q',
+            click: function() {
+              app.quit();
+            }
           }
+        ]
+      },
+      {
+        label: 'Edit',
+        submenu: [
+          { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
+          { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' }
         ]
       },
       {
