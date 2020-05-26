@@ -1,0 +1,41 @@
+<div class="wrapper">
+  <div class="header-group" *ngFor="let item of headers; index as i">
+    <input
+      placeholder="input key"
+      nz-input
+      [(ngModel)]="item.key"
+      (input)="showSuggestions('key', $event.target?.value)"
+      (blur)="suggestionOptions = []"
+      [nzAutocomplete]="auto"
+    />
+    <span class="colon">:</span>
+    <input
+      placeholder="input value"
+      nz-input
+      [(ngModel)]="item.value"
+      (input)="showSuggestions('value', $event.target?.value)"
+      (blur)="suggestionOptions = []"
+      [nzAutocomplete]="auto"
+    />
+    <i
+      nz-icon
+      class="remove"
+      nzType="delete"
+      nzTheme="fill"
+      nz-popconfirm
+      nzPopconfirmTitle="Are you sure?"
+      nzOkText="ok"
+      nzCancelText="cancel"
+      (nzOnConfirm)="removeHeader(item.uuid)"
+    ></i>
+    <nz-autocomplete nzBackfill #auto>
+      <nz-auto-option *ngFor="let option of suggestionOptions" [nzValue]="option">
+        {{ option }}
+      </nz-auto-option>
+    </nz-autocomplete>
+  </div>
+  
+  <button nz-button nzType="primary" (click)="addHeader($event)">
+    Add Header
+  </button>
+</div>

@@ -52,6 +52,7 @@ import { StatusbarComponent } from './components/statusbar/statusbar.component';
 import { StatusbarService } from './service/statusbar.service';
 import { ResponseTypesComponent } from './components/response-types/response-types.component';
 import { RequestCodeComponent } from './components/request-code/request-code.component';
+import { ResponseHeadersComponent } from './components/response-headers/response-headers.component';
 
 registerLocaleData(en);
 
@@ -69,7 +70,8 @@ registerLocaleData(en);
     CollectionSettingsComponent,
     StatusbarComponent,
     ResponseTypesComponent,
-    RequestCodeComponent
+    RequestCodeComponent,
+    ResponseHeadersComponent
   ],
   imports: [
     BrowserModule,

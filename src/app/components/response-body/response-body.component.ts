@@ -7,7 +7,8 @@ import {
   EventEmitter,
   ElementRef,
   ViewChild,
-  OnDestroy
+  OnDestroy,
+  AfterViewInit
 } from '@angular/core';
 import {
   Subject,
@@ -25,7 +26,7 @@ declare var amdRequire: any;
   templateUrl: './response-body.component.html',
   styleUrls: ['./response-body.component.scss']
 })
-export class ResponseBodyComponent implements OnInit, OnDestroy {
+export class ResponseBodyComponent implements OnInit, OnDestroy, AfterViewInit {
   _responseBody: string;
   @Input()
   set responseBody(value) {
@@ -52,6 +53,9 @@ export class ResponseBodyComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit(): void {
     this.subscribeResponseBodyChange();
     setTimeout(() => {
       this.initEditor();
@@ -62,7 +66,6 @@ export class ResponseBodyComponent implements OnInit, OnDestroy {
         this.editor.layout();
       }
     });
-
     this.subscriptions.push(subscribeResize);
   }
 

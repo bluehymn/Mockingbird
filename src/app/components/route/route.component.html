@@ -90,21 +90,21 @@
         nzType="delete"
         nzTheme="fill"
         (click)="removeResponse(activatedResponse.id, activatedResponse.name)"
-        nz-tooltip nzTooltipTitle="Remove response"
+        nz-tooltip
+        nzTooltipTitle="Remove response"
       ></i>
     </div>
 
-    <nz-tabset>
-      <nz-tab nzTitle="Body">
+    <nz-tabset nzAnimated="false">
+      <nz-tab nzTitle="Body" nzForceRender="true">
         <app-response-body
           [responseBody]="responseBody"
           (responseBodyChange)="responseChange('body', $event)"
         ></app-response-body>
       </nz-tab>
-      <!-- TODO：设置headers -->
-      <!-- <nz-tab nzTitle="Headers">
-          Content of Tab Pane 2
-        </nz-tab> -->
+      <nz-tab nzTitle="Headers">
+        <app-response-headers></app-response-headers>
+      </nz-tab>
       <nz-tab nzTitle="Types" [nzForceRender]="true">
         <app-response-types [responseBody]="responseBody"></app-response-types>
       </nz-tab>

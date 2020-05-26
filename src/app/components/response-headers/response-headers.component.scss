@@ -1,0 +1,26 @@
+@import '../../scss/color';
+
+.wrapper {
+  padding-top: 12px;
+  position: relative;
+  height: calc(100vh - 378px);
+  overflow-y: auto;
+}
+
+.header-group {
+  display: flex;
+  align-items: center;
+  padding-bottom: 6px;
+  .colon {
+    padding: 0 6px;
+  }
+  .remove {
+    color: $gray-5;
+    transition: 0.2s ease-in all;
+    margin-left: 12px;
+    cursor: pointer;
+    &:hover {
+      color: $red-5;
+    }
+  }
+}
