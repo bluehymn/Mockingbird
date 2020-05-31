@@ -7,6 +7,7 @@
       (input)="showSuggestions('key', $event.target?.value)"
       (blur)="suggestionOptions = []"
       [nzAutocomplete]="auto"
+      (ngModelChange)="onChange()"
     />
     <span class="colon">:</span>
     <input
@@ -16,6 +17,7 @@
       (input)="showSuggestions('value', $event.target?.value)"
       (blur)="suggestionOptions = []"
       [nzAutocomplete]="auto"
+      (ngModelChange)="onChange()"
     />
     <i
       nz-icon

@@ -32,6 +32,7 @@ export class RouteComponent implements OnInit {
   activatedResponse: Response;
   responseBody = '';
   statusCodes = [];
+  responseHeaders = [];
   name$ = new Subject<string>();
   method$ = new Subject<HttpMethod>();
   path$ = new Subject<string>();
@@ -43,7 +44,6 @@ export class RouteComponent implements OnInit {
   constructor(
     private routeService: RouteService,
     private responseService: ResponseService,
-    private messageService: NzMessageService,
     private modalService: NzModalService,
     private serverService: ServerService,
     private statusbarService: StatusbarService
@@ -105,6 +105,7 @@ export class RouteComponent implements OnInit {
           this.activatedResponse = ret;
           this.activatedResponseId = responseId;
           this.responseBody = ret.body;
+          this.responseHeaders = ret.headers;
           this.updateRoute({
             activatedResponseId: responseId
           });

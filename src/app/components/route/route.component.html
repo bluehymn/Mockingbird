@@ -103,7 +103,7 @@
         ></app-response-body>
       </nz-tab>
       <nz-tab nzTitle="Headers">
-        <app-response-headers></app-response-headers>
+        <app-response-headers (change)="responseChange('headers', $event)" [responseHeaders]="responseHeaders"></app-response-headers>
       </nz-tab>
       <nz-tab nzTitle="Types" [nzForceRender]="true">
         <app-response-types [responseBody]="responseBody"></app-response-types>

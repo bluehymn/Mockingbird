@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { IHttpHeader } from 'src/app/service/types';
 import { HEADER_KEYS, HEADER_VALUES } from 'src/app/constants/http';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-response-headers',
@@ -14,6 +15,15 @@ export class ResponseHeadersComponent implements OnInit {
     keyOptions: any[];
     valueOptions: any[];
   })[] = [];
+  @Output()
+  change = new EventEmitter();
+  @Input()
+  set responseHeaders(headers: IHttpHeader[]) {
+    this.headers = [];
+    headers.forEach(({ key, value }) => {
+      this.addHeader(null, key, value);
+    });
+  }
 
   constructor() {}
 
@@ -31,11 +41,11 @@ export class ResponseHeadersComponent implements OnInit {
     }
   }
 
-  addHeader(event) {
+  addHeader(event, key?, value?) {
     const header = {
       uuid: (new Date().getTime() + Math.random() * 10000).toString(),
-      key: '',
-      value: '',
+      key: key || '',
+      value: value || '',
       keyOptions: [],
       valueOptions: [],
     };
@@ -50,5 +60,12 @@ export class ResponseHeadersComponent implements OnInit {
         break;
       }
     }
+  }
+
+  onChange() {
+    const headers = this.headers.map((item) => {
+      return _.pick(item, 'key', 'value');
+    });
+    this.change.emit(headers);
   }
 }
